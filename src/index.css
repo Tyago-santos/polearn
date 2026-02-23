@@ -1,0 +1,6 @@
+/* Seu arquivo CSS principal */
+@import "tailwindcss";
+
+@theme {
+  --color-background: #0f0c1c;
+}
