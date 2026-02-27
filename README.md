@@ -6,7 +6,7 @@ Polearn e um app web para aprender diversos idiomas de forma pratica e intuitiva
 
 ## Objetivo do app
 
-O objetivo do Polearn e ajudar pessoas a aprender idiomas com consistencia, por meio de uma experiencia simples e objetiva. A proposta e transformar o estudo em uma rotina leve, com atividades praticas para leitura, escrita, escuta e vocabulario, permitindo evolucao continua no dia a dia.
+O objetivo do Polearn e ajudar pessoas a aprender idiomas com consistencia, por meio de uma experiencia simples e objetiva. A proposta e transformar o estudo em uma rotina leve, com atividades praticas para leitura e escrita, , permitindo evolução continua no dia a dia.
 
 ## Tecnologias
 
