@@ -1,5 +1,7 @@
 # Polearn
 
+![Logo do Polearn](public/logo.png)
+
 Polearn e um app web para aprender diversos idiomas de forma pratica e intuitiva.
 
 ## Objetivo do app
