@@ -23,9 +23,18 @@ function Home() {
       <section className=" m-auto max-w-4xl  ">
         <TitleSection title="Modo de Aprendizagem" />
         <div className="md:flex flex-col px-4 md: px-0 gap-4 md:flex-row my-10">
-          <CardComponent />
-          <CardComponent />
-          <CardComponent />
+          <CardComponent
+            descriptionGame="Arraste para encontrar a resposta correta"
+            titleGame="Arraste e solte"
+          />
+          <CardComponent
+            descriptionGame="Encontre a resposta correta em meio a várias opções"
+            titleGame="Encontre a resposta correta"
+          />
+          <CardComponent
+            descriptionGame="Encontre a ordem correta das palavras, arrastando as palavras na ordem correta"
+            titleGame="Ordem correta"
+          />
         </div>
       </section>
       <Footer />
