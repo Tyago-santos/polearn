@@ -1,0 +1,91 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useForm } from "react-hook-form";
+
+import { Button } from "@/components/ui/button";
+import TitleSection from "@/components/TitleSection";
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+export const Route = createFileRoute("/nivel_person")({
+  component: RouteComponent,
+});
+
+type TypeLanguage =
+  | "Inglês"
+  | "Espanhol"
+  | "Mandarim"
+  | "Francês"
+  | "Japonês"
+  | "Árabe";
+
+type typeNivel = "iniciante" | "intermediário" | "avançado";
+
+type FormData = {
+  nivel: typeNivel;
+  Language: TypeLanguage;
+};
+
+function RouteComponent() {
+  const { handleSubmit, setValue } = useForm<FormData>();
+
+  const handleSubmitClick = (data: FormData) => {
+    console.log(data.Language);
+    console.log(data.nivel);
+  };
+
+  return (
+    <main className="h-screen bg-background flex items-center justify-center px-5">
+      <form
+        className="w-[300px] overflow-y-scroll lg:overflow-y-hidden py-3 "
+        onSubmit={handleSubmit(handleSubmitClick)}
+      >
+        <img className="size-35 m-auto" src="/logo.png" alt="" />
+        <TitleSection title="Escolha sua forma de aprender e idioma" />
+
+        <Select
+          onValueChange={(value: TypeLanguage) => setValue("Language", value)}
+        >
+          <SelectTrigger className="w-full max-w-70 my-4">
+            <SelectValue placeholder="Qual idioma você deseja aprender" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Qual idioma você deseja aprender</SelectLabel>
+              <SelectItem value="Inglês">Inglês</SelectItem>
+              <SelectItem value="Espanhol">Espanhol</SelectItem>
+              <SelectItem value="Mandarim">Mandarim (Chinês)</SelectItem>
+              <SelectItem value="Francês">Francês</SelectItem>
+              <SelectItem value="Japonês">Japonês</SelectItem>
+              <SelectItem value="Alemão">Alemão</SelectItem>
+              <SelectItem value="Árabe">Árabe</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        <Select onValueChange={(value: typeNivel) => setValue("nivel", value)}>
+          <SelectTrigger className="w-full max-w-70 my-4">
+            <SelectValue placeholder="Qual seu nível nesse idioma" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Qual seu nível nesse idioma</SelectLabel>
+              <SelectItem value="beginner">Iniciante</SelectItem>
+              <SelectItem value="intermediate">Intermediário</SelectItem>
+              <SelectItem value="advanced">Avançado</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        <Button className="cursor-pointer">Finalizar</Button>
+      </form>
+    </main>
+  );
+}
