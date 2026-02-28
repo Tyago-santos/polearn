@@ -9,8 +9,32 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as Nivel_personRouteImport } from './routes/nivel_person'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as FogertRouteImport } from './routes/fogert'
 import { Route as IndexRouteImport } from './routes/index'
 
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Nivel_personRoute = Nivel_personRouteImport.update({
+  id: '/nivel_person',
+  path: '/nivel_person',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FogertRoute = FogertRouteImport.update({
+  id: '/fogert',
+  path: '/fogert',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +43,72 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/fogert': typeof FogertRoute
+  '/login': typeof LoginRoute
+  '/nivel_person': typeof Nivel_personRoute
+  '/register': typeof RegisterRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/fogert': typeof FogertRoute
+  '/login': typeof LoginRoute
+  '/nivel_person': typeof Nivel_personRoute
+  '/register': typeof RegisterRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/fogert': typeof FogertRoute
+  '/login': typeof LoginRoute
+  '/nivel_person': typeof Nivel_personRoute
+  '/register': typeof RegisterRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/fogert' | '/login' | '/nivel_person' | '/register'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/fogert' | '/login' | '/nivel_person' | '/register'
+  id: '__root__' | '/' | '/fogert' | '/login' | '/nivel_person' | '/register'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FogertRoute: typeof FogertRoute
+  LoginRoute: typeof LoginRoute
+  Nivel_personRoute: typeof Nivel_personRoute
+  RegisterRoute: typeof RegisterRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nivel_person': {
+      id: '/nivel_person'
+      path: '/nivel_person'
+      fullPath: '/nivel_person'
+      preLoaderRoute: typeof Nivel_personRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fogert': {
+      id: '/fogert'
+      path: '/fogert'
+      fullPath: '/fogert'
+      preLoaderRoute: typeof FogertRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +121,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FogertRoute: FogertRoute,
+  LoginRoute: LoginRoute,
+  Nivel_personRoute: Nivel_personRoute,
+  RegisterRoute: RegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
