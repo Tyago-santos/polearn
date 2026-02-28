@@ -1,3 +1,4 @@
+import ImageSource from "@/components/ImageSource";
 import { InputField } from "@/components/InputField";
 import LinkNavigation from "@/components/LinkNavigation";
 import TitleSection from "@/components/TitleSection";
@@ -34,7 +35,7 @@ function RouteComponent() {
         className="w-[300px] overflow-y-scroll lg:overflow-y-hidden py-3"
         onSubmit={handleSubmit(handleSubmitClick)}
       >
-        <img src="/logo.png" alt="" />
+        <ImageSource alt="logo" />
         <TitleSection title="Esqueceu sua senha" />
         <InputField
           type="email"

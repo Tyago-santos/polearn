@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import ImageSource from "@/components/ImageSource";
 
 export const Route = createFileRoute("/nivel_person")({
   component: RouteComponent,
@@ -74,7 +75,7 @@ function RouteComponent() {
         className="w-[300px] overflow-y-scroll lg:overflow-y-hidden py-3 "
         onSubmit={handleSubmit(handleSubmitClick)}
       >
-        <img className="size-35 m-auto" src="/logo.png" alt="" />
+        <ImageSource alt="logo" />
         <TitleSection title="Escolha sua forma de aprender e idioma" />
 
         <Select onValueChange={handleChooseLangauge}>

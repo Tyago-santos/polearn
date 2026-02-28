@@ -5,6 +5,7 @@ import { InputField } from "@/components/InputField";
 import { Button } from "@/components/ui/button";
 import TitleSection from "@/components/TitleSection";
 import LinkNavigation from "@/components/LinkNavigation";
+import ImageSource from "@/components/ImageSource";
 
 export const Route = createFileRoute("/register")({
   component: Register,
@@ -39,7 +40,7 @@ function Register() {
         className="w-[300px] overflow-y-scroll lg:overflow-y-hidden py-5"
         onSubmit={handleSubmit(handleSubmitClick)}
       >
-        <img src="/logo.png" alt="" />
+        <ImageSource alt="logo" />
         <TitleSection title="Faça cadastro  " />
         <InputField
           type="email"
