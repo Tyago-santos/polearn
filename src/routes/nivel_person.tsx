@@ -34,11 +34,38 @@ type FormData = {
 };
 
 function RouteComponent() {
-  const { handleSubmit, setValue } = useForm<FormData>();
+  const {
+    handleSubmit,
+    setValue,
+    setError,
+    formState: { errors },
+  } = useForm<FormData>();
 
   const handleSubmitClick = (data: FormData) => {
     console.log(data.Language);
     console.log(data.nivel);
+
+    if (!data.Language)
+      setError("Language", {
+        message: "Campo obrigatório",
+      });
+    if (!data.nivel) {
+      setError("nivel", {
+        message: "Campo obrigatório",
+      });
+    }
+  };
+
+  const handleChooseLangauge = (value: TypeLanguage) => {
+    setValue("Language", value);
+
+    setError("Language", { message: "" });
+  };
+
+  const handleChooseNivel = (value: typeNivel) => {
+    setValue("nivel", value);
+
+    setError("nivel", { message: "" });
   };
 
   return (
@@ -50,9 +77,7 @@ function RouteComponent() {
         <img className="size-35 m-auto" src="/logo.png" alt="" />
         <TitleSection title="Escolha sua forma de aprender e idioma" />
 
-        <Select
-          onValueChange={(value: TypeLanguage) => setValue("Language", value)}
-        >
+        <Select onValueChange={handleChooseLangauge}>
           <SelectTrigger className="w-full max-w-70 my-4">
             <SelectValue placeholder="Qual idioma você deseja aprender" />
           </SelectTrigger>
@@ -69,8 +94,11 @@ function RouteComponent() {
             </SelectGroup>
           </SelectContent>
         </Select>
+        {errors.Language && (
+          <p className="text-red-500">{errors.Language.message}</p>
+        )}
 
-        <Select onValueChange={(value: typeNivel) => setValue("nivel", value)}>
+        <Select onValueChange={handleChooseNivel}>
           <SelectTrigger className="w-full max-w-70 my-4">
             <SelectValue placeholder="Qual seu nível nesse idioma" />
           </SelectTrigger>
@@ -83,6 +111,8 @@ function RouteComponent() {
             </SelectGroup>
           </SelectContent>
         </Select>
+
+        {errors.nivel && <p className="text-red-500">{errors.nivel.message}</p>}
 
         <Button className="cursor-pointer">Finalizar</Button>
       </form>
