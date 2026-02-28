@@ -22,6 +22,10 @@
   scrollbar-color: #888 #f1f1f1; /* thumb track */
 }
 
+body {
+  font-family: var(--font-main);
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
