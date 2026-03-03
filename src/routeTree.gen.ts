@@ -14,6 +14,7 @@ import { Route as Nivel_personRouteImport } from './routes/nivel_person'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FogertRouteImport } from './routes/fogert'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GameGameIdRouteImport } from './routes/game/$gameId'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -40,6 +41,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GameGameIdRoute = GameGameIdRouteImport.update({
+  id: '/game/$gameId',
+  path: '/game/$gameId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/nivel_person': typeof Nivel_personRoute
   '/register': typeof RegisterRoute
+  '/game/$gameId': typeof GameGameIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/nivel_person': typeof Nivel_personRoute
   '/register': typeof RegisterRoute
+  '/game/$gameId': typeof GameGameIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,33 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/nivel_person': typeof Nivel_personRoute
   '/register': typeof RegisterRoute
+  '/game/$gameId': typeof GameGameIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/fogert' | '/login' | '/nivel_person' | '/register'
+  fullPaths:
+    | '/'
+    | '/fogert'
+    | '/login'
+    | '/nivel_person'
+    | '/register'
+    | '/game/$gameId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/fogert' | '/login' | '/nivel_person' | '/register'
-  id: '__root__' | '/' | '/fogert' | '/login' | '/nivel_person' | '/register'
+  to:
+    | '/'
+    | '/fogert'
+    | '/login'
+    | '/nivel_person'
+    | '/register'
+    | '/game/$gameId'
+  id:
+    | '__root__'
+    | '/'
+    | '/fogert'
+    | '/login'
+    | '/nivel_person'
+    | '/register'
+    | '/game/$gameId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +105,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   Nivel_personRoute: typeof Nivel_personRoute
   RegisterRoute: typeof RegisterRoute
+  GameGameIdRoute: typeof GameGameIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/game/$gameId': {
+      id: '/game/$gameId'
+      path: '/game/$gameId'
+      fullPath: '/game/$gameId'
+      preLoaderRoute: typeof GameGameIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +161,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   Nivel_personRoute: Nivel_personRoute,
   RegisterRoute: RegisterRoute,
+  GameGameIdRoute: GameGameIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
