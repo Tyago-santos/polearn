@@ -13,7 +13,7 @@ type PropsType = {
 };
 export function CardComponent({ titleGame, descriptionGame }: PropsType) {
   return (
-    <Card className="mx-autorw-full flex-1 my-4 md:my-0 max-w-sm border-black/10 hover:border-black/50 cursor-pointer shadow-xl ">
+    <Card className="mx-autorw-full flex-1 my-4 md:my-0 max-w-sm border-black/30 hover:border-black/80 cursor-pointer shadow-xl ">
       <CardHeader>
         <CardTitle>{titleGame}</CardTitle>
       </CardHeader>
@@ -21,7 +21,7 @@ export function CardComponent({ titleGame, descriptionGame }: PropsType) {
         <p className="text-wrap block min-h-20">{descriptionGame}</p>
       </CardContent>
       <CardFooter>
-        <Button variant="outline" size="sm" className="w-full cursor-pointer">
+        <Button variant="outline" size="sm" className="w-full cursor-pointer border border-text-secondary/50 hover:bg-black hover:text-white">
           Jogar
         </Button>
       </CardFooter>
