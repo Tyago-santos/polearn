@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Header } from "../components/Header";
 import { TableComponet } from "../components/Table";
 import { CardComponent } from "@/components/Card";
@@ -10,6 +10,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const navigate = useNavigate();
   return (
     <main className="bg-background ">
       <Header />
@@ -30,6 +31,13 @@ function Home() {
           <CardComponent
             descriptionGame="Encontre a resposta correta em meio a várias opções"
             titleGame="Encontre a resposta correta"
+            onClick={() =>
+              navigate({
+                to: "/$game",
+                params: { game: "question" },
+                replace: true,
+              })
+            }
           />
           <CardComponent
             descriptionGame="Encontre a ordem correta das palavras, arrastando as palavras na ordem correta"
