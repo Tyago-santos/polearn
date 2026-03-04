@@ -13,8 +13,8 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as Nivel_personRouteImport } from './routes/nivel_person'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FogertRouteImport } from './routes/fogert'
+import { Route as GameRouteImport } from './routes/$game'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as GameGameIdRouteImport } from './routes/game/$gameId'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -36,76 +36,70 @@ const FogertRoute = FogertRouteImport.update({
   path: '/fogert',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GameRoute = GameRouteImport.update({
+  id: '/$game',
+  path: '/$game',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GameGameIdRoute = GameGameIdRouteImport.update({
-  id: '/game/$gameId',
-  path: '/game/$gameId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$game': typeof GameRoute
   '/fogert': typeof FogertRoute
   '/login': typeof LoginRoute
   '/nivel_person': typeof Nivel_personRoute
   '/register': typeof RegisterRoute
-  '/game/$gameId': typeof GameGameIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$game': typeof GameRoute
   '/fogert': typeof FogertRoute
   '/login': typeof LoginRoute
   '/nivel_person': typeof Nivel_personRoute
   '/register': typeof RegisterRoute
-  '/game/$gameId': typeof GameGameIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$game': typeof GameRoute
   '/fogert': typeof FogertRoute
   '/login': typeof LoginRoute
   '/nivel_person': typeof Nivel_personRoute
   '/register': typeof RegisterRoute
-  '/game/$gameId': typeof GameGameIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$game'
     | '/fogert'
     | '/login'
     | '/nivel_person'
     | '/register'
-    | '/game/$gameId'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/fogert'
-    | '/login'
-    | '/nivel_person'
-    | '/register'
-    | '/game/$gameId'
+  to: '/' | '/$game' | '/fogert' | '/login' | '/nivel_person' | '/register'
   id:
     | '__root__'
     | '/'
+    | '/$game'
     | '/fogert'
     | '/login'
     | '/nivel_person'
     | '/register'
-    | '/game/$gameId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GameRoute: typeof GameRoute
   FogertRoute: typeof FogertRoute
   LoginRoute: typeof LoginRoute
   Nivel_personRoute: typeof Nivel_personRoute
   RegisterRoute: typeof RegisterRoute
-  GameGameIdRoute: typeof GameGameIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -138,6 +132,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FogertRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$game': {
+      id: '/$game'
+      path: '/$game'
+      fullPath: '/$game'
+      preLoaderRoute: typeof GameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -145,23 +146,16 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/game/$gameId': {
-      id: '/game/$gameId'
-      path: '/game/$gameId'
-      fullPath: '/game/$gameId'
-      preLoaderRoute: typeof GameGameIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GameRoute: GameRoute,
   FogertRoute: FogertRoute,
   LoginRoute: LoginRoute,
   Nivel_personRoute: Nivel_personRoute,
   RegisterRoute: RegisterRoute,
-  GameGameIdRoute: GameGameIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
