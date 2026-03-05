@@ -12,46 +12,52 @@ export const Route = createFileRoute("/")({
 function Home() {
   const navigate = useNavigate();
   return (
-    <main className="bg-background ">
+    <main className="min-h-screen bg-gradient-to-b from-sky-50 via-white to-emerald-50">
       <Header />
 
-      <section className="py-5 m-auto max-w-[300px]  lg:max-w-4xl ">
-        <TitleSection title="Ranking dos melhores" />
-        <div className="mt-4 ">
-          <TableComponet />
+      <section className="mx-auto max-w-5xl px-4 py-6 md:py-10">
+        <div className="rounded-3xl border border-slate-200 bg-white/85 p-4 shadow-lg shadow-slate-200/60 backdrop-blur-sm md:p-6">
+          <TitleSection title="Ranking dos melhores" />
+          <div className="mt-5 overflow-hidden rounded-2xl border border-slate-100 bg-white">
+            <TableComponet />
+          </div>
         </div>
       </section>
-      <section className=" m-auto max-w-4xl  ">
-        <TitleSection title="Modo de Aprendizagem" />
-        <div className="md:flex flex-col px-4 md: px-0 gap-4 md:flex-row my-10">
-          <CardComponent
-            descriptionGame="Arraste para encontrar a resposta correta"
-            titleGame="Arraste e solte"
-          />
-          <CardComponent
-            descriptionGame="Encontre a resposta correta em meio a várias opções"
-            titleGame="Encontre a resposta correta"
-            onClick={() =>
-              navigate({
-                to: "/$game",
-                params: { game: "question" },
-                replace: true,
-              })
-            }
-          />
-          <CardComponent
-            onClick={() =>
-              navigate({
-                to: "/$game",
-                params: { game: "drag" },
-                replace: true,
-              })
-            }
-            descriptionGame="Encontre a ordem correta das palavras, arrastando as palavras na ordem correta"
-            titleGame="Ordem correta"
-          />
+
+      <section className="mx-auto max-w-5xl px-4 pb-6 md:pb-10">
+        <div className="rounded-3xl border border-slate-200 bg-white/85 p-4 shadow-lg shadow-slate-200/60 backdrop-blur-sm md:p-6">
+          <TitleSection title="Modo de Aprendizagem" />
+          <div className="my-8 flex flex-col gap-4 md:flex-row">
+            <CardComponent
+              descriptionGame="Arraste para encontrar a resposta correta"
+              titleGame="Arraste e solte"
+            />
+            <CardComponent
+              descriptionGame="Encontre a resposta correta em meio a várias opções"
+              titleGame="Encontre a resposta correta"
+              onClick={() =>
+                navigate({
+                  to: "/$game",
+                  params: { game: "question" },
+                  replace: true,
+                })
+              }
+            />
+            <CardComponent
+              onClick={() =>
+                navigate({
+                  to: "/$game",
+                  params: { game: "drag" },
+                  replace: true,
+                })
+              }
+              descriptionGame="Encontre a ordem correta das palavras, arrastando as palavras na ordem correta"
+              titleGame="Ordem correta"
+            />
+          </div>
         </div>
       </section>
+
       <Footer />
     </main>
   );
