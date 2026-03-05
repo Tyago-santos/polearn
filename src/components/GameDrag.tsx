@@ -28,7 +28,6 @@ export default function GameDrag() {
   >(() => ({
     [answerActive]: toDraggableWords(currentSentence?.wordsShuffled ?? []),
   }));
-  //const [openModal, setOpenModal] = useState(false);
   const words =
     wordsByAnswer[answerActive] ??
     toDraggableWords(currentSentence?.wordsShuffled ?? []);
@@ -59,25 +58,29 @@ export default function GameDrag() {
   };
 
   const calcAnswer = (answerActive / answerCount) * 100;
+
   return (
-    <div>
-      <div className="max-w-2xl relative flex items-center justify-center m-auto h-10  rounded-lg  bg-text-secondary p-4 ">
-        <span className="z-99 text-white">
-          {" "}
+    <section className="max-w-4xl mx-auto mt-6 rounded-3xl border border-blue-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
+      <div className="mb-5 flex items-center justify-between text-sm font-bold text-blue-600">
+        <span>Monte a frase na ordem correta</span>
+        <span>
           {answerActive}/{answerCount}
         </span>
-        <div
-          style={{ width: `${calcAnswer}%` }}
-          className="flex transition-width duration-1000 absolute right-0 bottom-0 top-0 left-0 bg-green-500 items-center justify-center rounded-lg "
-        ></div>
       </div>
 
-      <div className="max-w-2xl m-auto my-4">
+      <div className="relative h-3 w-full overflow-hidden rounded-full bg-blue-200">
+        <div
+          style={{ width: `${calcAnswer}%` }}
+          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 transition-all duration-700"
+        />
+      </div>
+
+      <div className="mt-8 rounded-2xl border border-blue-200 bg-blue-50 p-4 md:p-5">
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="questions" type="list" direction="horizontal">
             {(provided) => (
               <article
-                className="flex overflow-x-hidden flex-wrap gap-4 overflow-x-auto pb-2"
+                className="flex flex-wrap gap-3 overflow-x-hidden pb-2"
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
@@ -98,7 +101,7 @@ export default function GameDrag() {
                           ...provided.draggableProps.style,
                           touchAction: "none",
                         }}
-                        className="block shrink-0 border-3 border-green-400 px-5 py-2 rounded-lg font-bold text-sm text-green-400 hover:bg-green-400 hover:text-white cursor-pointer"
+                        className="block shrink-0 rounded-xl border-2 border-blue-500 bg-white px-4 py-2 text-sm font-extrabold text-blue-600 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-500 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300"
                         data-dragging={snapshot.isDragging}
                       >
                         {word.value}
@@ -113,6 +116,6 @@ export default function GameDrag() {
           </Droppable>
         </DragDropContext>
       </div>
-    </div>
+    </section>
   );
 }
