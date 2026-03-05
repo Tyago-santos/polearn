@@ -40,6 +40,13 @@ function Home() {
             }
           />
           <CardComponent
+            onClick={() =>
+              navigate({
+                to: "/$game",
+                params: { game: "drag" },
+                replace: true,
+              })
+            }
             descriptionGame="Encontre a ordem correta das palavras, arrastando as palavras na ordem correta"
             titleGame="Ordem correta"
           />
