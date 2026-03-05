@@ -2,14 +2,13 @@ import { Link } from "@tanstack/react-router";
 
 const Footer = () => {
   return (
-    <footer>
-      <nav className=" flex flex-col pb-2 md:flex-row justify-between m-auto max-w-4xl items-center">
+    <footer className="mt-10 border-t border-slate-200 bg-white/70">
+      <nav className="m-auto flex max-w-4xl flex-col items-center justify-between gap-3 px-4 py-4 md:flex-row">
         <Link to="/">
-          <img className="md:size-25 size-15" src="/logo.png" alt="" />
+          <img className="size-14 md:size-16" src="/logo.png" alt="Logo" />
         </Link>
-        <span className="text-sm md: text-normal text-center">
-          Todos os direitos reservados &copy;Tiago Santos -
-          xlzthyago@gmail.com{" "}
+        <span className="text-center text-sm text-slate-600">
+          Todos os direitos reservados &copy;Tiago Santos - xlzthyago@gmail.com
         </span>
       </nav>
     </footer>
