@@ -1,44 +1,51 @@
 import beginnerQuiz from "@/api";
 import { useState } from "react";
 
-import ModalAlert from '@/components/ModalAlert'
+import ModalAlert from "@/components/ModalAlert";
 
+export default function GameQuestion() {
+  const [answerCount] = useState(beginnerQuiz.length);
+  const [answerActive] = useState(6);
+  const [openModal, setOpenModal] = useState(false);
 
-export default function  GameQuestion (){
+  const calcAnswer = (answerActive / answerCount) * 100;
 
-  const [answerCount ,] = useState(beginnerQuiz.length)
-  const [answerActive, ] =  useState(6)
-  const [openModal, setOpenModal] = useState(false)
-
-  const calcAnswer = (answerActive / answerCount) *100
-
-  return <div>
-
-        <div className='max-w-2xl relative flex items-center justify-center m-auto h-10  rounded-lg  bg-text-secondary p-4 '>
-
-           <span className='z-99 text-white'>   {answerActive}/{answerCount}</span>
-        <div style={{width: `${calcAnswer}%`}} className='flex transition-width duration-1000 absolute right-0 bottom-0 top-0 left-0 bg-green-500 items-center justify-center rounded-lg '></div>
+  return (
+    <section className="max-w-4xl mx-auto mt-6 rounded-3xl border border-slate-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
+      <div className="mb-5 flex items-center justify-between text-sm font-bold text-blue-600">
+        <span>Pergunta</span>
+        <span>
+          {answerActive}/{answerCount}
+        </span>
       </div>
 
-       <div className='max-w-2xl m-auto mt-10 '>
-        <p className='text-3xl mb-10 font-bold'>{beginnerQuiz[answerActive].question}</p>
+      <div className="relative h-3 w-full overflow-hidden rounded-full bg-blue-200">
+        <div
+          style={{ width: `${calcAnswer}%` }}
+          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 transition-all duration-700"
+        />
+      </div>
 
+      <div className="mt-8">
+        <p className="mb-6 text-3xl font-extrabold leading-snug text-blue-800 md:text-3xl">
+          {beginnerQuiz[answerActive].question}
+        </p>
 
-
-        
-        {
-          beginnerQuiz[answerActive].options.map((option, i)=>(
-            <div key={i} className=''>
-            <span onClick={()=>setOpenModal(true)} className='flex item-center gap-4 text-xl border-2 border-text-secondary my-4 p-4 rounded-lg cursor-pointer hover:bg-green-500 transition-color duration-500 hover:text-white'>
-              {option}
-            </span>
-
+        <div className="space-y-3">
+          {beginnerQuiz[answerActive].options.map((option, i) => (
+            <div key={i}>
+              <span
+                onClick={() => setOpenModal(true)}
+                className="flex cursor-pointer items-center rounded-2xl border-2 border-blue-200 bg-white px-4 py-4 text-lg font-semibold text-slate-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-400 hover:bg-blue-500 hover:text-white"
+              >
+                {option}
+              </span>
             </div>
-          ))
-        }
-      
-    </div>
+          ))}
+        </div>
+      </div>
 
-   {openModal&& <ModalAlert onClose={setOpenModal}/>}
-  </div> 
-} 
+      {openModal && <ModalAlert onClose={setOpenModal} />}
+    </section>
+  );
+}
