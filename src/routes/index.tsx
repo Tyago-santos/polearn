@@ -29,10 +29,12 @@ function Home() {
           <TitleSection title="Modo de Aprendizagem" />
           <div className="my-8 flex flex-col gap-4 md:flex-row">
             <CardComponent
+              color="blue"
               descriptionGame="Arraste para encontrar a resposta correta"
               titleGame="Arraste e solte"
             />
             <CardComponent
+              color="green"
               descriptionGame="Encontre a resposta correta em meio a várias opções"
               titleGame="Encontre a resposta correta"
               onClick={() =>
@@ -44,6 +46,7 @@ function Home() {
               }
             />
             <CardComponent
+              color="red"
               onClick={() =>
                 navigate({
                   to: "/$game",
