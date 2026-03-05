@@ -32,6 +32,13 @@ function Home() {
               color="blue"
               descriptionGame="Arraste para encontrar a resposta correta"
               titleGame="Arraste e solte"
+              onClick={() =>
+                navigate({
+                  to: "/$game",
+                  params: { game: "drop" },
+                  replace: true,
+                })
+              }
             />
             <CardComponent
               color="green"

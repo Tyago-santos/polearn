@@ -1,4 +1,5 @@
 import GameDrag from "@/components/GameDrag";
+import GameDropResponse from "@/components/gameDropResponse";
 import GameQuestion from "@/components/GameQuestion";
 import { createFileRoute, useParams } from "@tanstack/react-router";
 
@@ -29,6 +30,7 @@ function Game() {
 
       {params.game === "question" && <GameQuestion />}
       {params.game === "drag" && <GameDrag />}
+      {params.game === "drop" && <GameDropResponse />}
     </main>
   );
 }
