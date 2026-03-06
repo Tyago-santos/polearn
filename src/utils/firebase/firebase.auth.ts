@@ -5,14 +5,22 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { auth } from "./firebase.config"; // Sua inicialização do Firebase
 
-export async function userLogin(email: string, senha: string): Promise<User> {
+export async function userLogin(
+  email: string,
+  paassword: string,
+): Promise<User> {
   try {
     // Await espera a promessa ser resolvida
-    const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      paassword,
+    );
 
     // Login realizado com sucesso
     const user = userCredential.user;
@@ -85,3 +93,12 @@ export const userLogout = async () => {
     console.error("Error signing out:", error);
   }
 };
+
+export async function userFogert(email: string) {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    console.log("E-mail de recuperação enviado!");
+  } catch (error) {
+    console.error("Erro ao enviar e-mail:", error.code);
+  }
+}
