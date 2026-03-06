@@ -1,25 +1,45 @@
+import { createRootRoute, Outlet, redirect } from "@tanstack/react-router";
 import { getCurrentUser } from "@/utils/firebase/firebase.auth";
-import { Outlet, createRootRoute, redirect } from "@tanstack/react-router";
+// import { hasCompletedProfile } from "@/utils/..."; // exemplo
+
+const guestOnly = ["/login", "/register"];
 
 export const Route = createRootRoute({
-  component: () => (
-    <>
-      <Outlet />
-    </>
-  ),
+  component: RootLayout,
 
   beforeLoad: async ({ location }) => {
-    const publicPaths = ["/login", "/register"];
-    if (publicPaths.includes(location.pathname)) {
+    const path = location.pathname;
+    const user = await getCurrentUser();
+
+    // 1) Usuário NÃO logado: só pode login/register
+    if (!user) {
+      const isGuestRoute = guestOnly.includes(path);
+      if (!isGuestRoute) {
+        throw redirect({ to: "/login", replace: true });
+      }
       return;
     }
 
-    const user = await getCurrentUser();
-    if (!user) {
-      throw redirect({
-        to: "/login",
-        replace: true,
-      });
+    // 2) Usuário logado: não pode voltar para login/register
+    if (guestOnly.includes(path)) {
+      throw redirect({ to: "/", replace: true });
     }
+
+    // 3) Exemplo onboarding:
+    // const completed = await hasCompletedProfile(user.uid);
+
+    // 3a) se NÃO completou perfil, força /nivel_person
+    // if (!completed && path !== "/nivel_person") {
+    //   throw redirect({ to: "/nivel_person", replace: true });
+    // }
+
+    // 3b) se já completou, bloqueia /nivel_person
+    // if (completed && onboardingOnly.includes(path)) {
+    //   throw redirect({ to: "/", replace: true });
+    // }
   },
 });
+
+function RootLayout() {
+  return <Outlet />;
+}
