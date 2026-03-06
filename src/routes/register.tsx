@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import TitleSection from "@/components/TitleSection";
 import LinkNavigation from "@/components/LinkNavigation";
 import ImageSource from "@/components/ImageSource";
+
+import userStore from "@/utils/zustand/userStore";
 import { userRegister } from "@/utils/firebase/firebase.auth";
-import { saveUser } from "@/utils/firebase/firebase.db";
 
 export const Route = createFileRoute("/register")({
   component: Register,
@@ -28,11 +29,16 @@ function Register() {
 
   const navigate = useNavigate();
 
+  const { setName, setEmail, setUserId } = userStore();
+
   const handleSubmitClick = async (data: FormData) => {
     if (data.email && data.name && data.password) {
       const user = await userRegister(data.email, data.password);
       if (user) {
-        await saveUser(user.uid, data.name, data.email);
+        setEmail(data.email);
+        setName(data.name);
+        setUserId(user.uid);
+
         navigate({
           to: "/nivel_person",
         });
