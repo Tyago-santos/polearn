@@ -74,7 +74,9 @@ export function InputField({
       </div>
 
       {errorValidate && (
-        <FieldDescription>{errorValidate.message}</FieldDescription>
+        <FieldDescription className="text-red-500">
+          {errorValidate.message}
+        </FieldDescription>
       )}
     </Field>
   );

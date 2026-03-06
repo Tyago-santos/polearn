@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import TitleSection from "@/components/TitleSection";
 import LinkNavigation from "@/components/LinkNavigation";
 import ImageSource from "@/components/ImageSource";
+import { userRegister } from "@/utils/firebase/firebase.auth";
+import { saveUser } from "@/utils/firebase/firebase.db";
 
 export const Route = createFileRoute("/register")({
   component: Register,
@@ -26,11 +28,15 @@ function Register() {
 
   const navigate = useNavigate();
 
-  const handleSubmitClick = (data: FormData) => {
+  const handleSubmitClick = async (data: FormData) => {
     if (data.email && data.name && data.password) {
-      navigate({
-        to: "/",
-      });
+      const user = await userRegister(data.email, data.password);
+      if (user) {
+        await saveUser(user.uid, data.name, data.email);
+        navigate({
+          to: "/nivel_person",
+        });
+      }
     }
   };
 
@@ -86,9 +92,9 @@ function Register() {
 
             <InputField
               type="text"
-              placeholder="fulnao"
+              placeholder="exemplo:fulnao1223"
               registerType="name"
-              label="Nome"
+              label="username"
               register={register}
               rules={{
                 required: "Nome é obrigatório",
