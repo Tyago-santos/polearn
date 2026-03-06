@@ -1,16 +1,19 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Header } from "../components/Header";
 import { TableComponet } from "../components/Table";
 import { CardComponent } from "@/components/Card";
 import TitleSection from "@/components/TitleSection";
 import Footer from "@/components/Footer";
+import ModalQuestionConfig from "@/components/ModalQuestionConfig";
+import { useState } from "react";
 
 export const Route = createFileRoute("/")({
   component: Home,
 });
 
 function Home() {
-  const navigate = useNavigate();
+  const [modalQuestioConfig, setModalQuestioConfig] = useState(false);
+  const [naviagteGame, setNavigateGame] = useState("");
   return (
     <main className="min-h-screen bg-gradient-to-b from-sky-50 via-white to-emerald-50">
       <Header />
@@ -32,35 +35,26 @@ function Home() {
               color="blue"
               descriptionGame="Arraste para encontrar a resposta correta"
               titleGame="Arraste e solte"
-              onClick={() =>
-                navigate({
-                  to: "/$game",
-                  params: { game: "drop" },
-                  replace: true,
-                })
-              }
+              onClick={() => {
+                setModalQuestioConfig(true);
+                setNavigateGame("drop");
+              }}
             />
             <CardComponent
               color="green"
               descriptionGame="Encontre a resposta correta em meio a várias opções"
               titleGame="Encontre a resposta correta"
-              onClick={() =>
-                navigate({
-                  to: "/$game",
-                  params: { game: "question" },
-                  replace: true,
-                })
-              }
+              onClick={() => {
+                setModalQuestioConfig(true);
+                setNavigateGame("question");
+              }}
             />
             <CardComponent
               color="red"
-              onClick={() =>
-                navigate({
-                  to: "/$game",
-                  params: { game: "drag" },
-                  replace: true,
-                })
-              }
+              onClick={() => {
+                setModalQuestioConfig(true);
+                setNavigateGame("drag");
+              }}
               descriptionGame="Encontre a ordem correta das palavras, arrastando as palavras na ordem correta"
               titleGame="Ordem correta"
             />
@@ -69,6 +63,13 @@ function Home() {
       </section>
 
       <Footer />
+      {modalQuestioConfig && (
+        <ModalQuestionConfig
+          open={modalQuestioConfig}
+          navigation={naviagteGame}
+          onClose={() => setModalQuestioConfig(false)}
+        />
+      )}
     </main>
   );
 }
