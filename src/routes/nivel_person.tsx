@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import ImageSource from "@/components/ImageSource";
+import userStore from "@/utils/zustand/userStore";
+import { saveUser } from "@/utils/firebase/firebase.db";
 
 export const Route = createFileRoute("/nivel_person")({
   component: RouteComponent,
@@ -25,27 +28,37 @@ type TypeLanguage =
   | "Mandarim"
   | "Francês"
   | "Japonês"
+  | "Alemão"
   | "Árabe";
 
-type typeNivel = "iniciante" | "intermediário" | "avançado";
+type TypeNivel = "iniciante" | "intermediario" | "avancado";
 
 type FormData = {
-  nivel: typeNivel;
+  nivel: TypeNivel;
   Language: TypeLanguage;
 };
 
 function RouteComponent() {
   const {
     handleSubmit,
+
     setValue,
     setError,
+    clearErrors,
     formState: { errors },
   } = useForm<FormData>();
 
-  const handleSubmitClick = (data: FormData) => {
-    console.log(data.Language);
-    console.log(data.nivel);
+  const { email, name, userId } = userStore();
+  const navigate = useNavigate();
 
+  const handleSubmitClick = async (data: FormData) => {
+    console.log(data.Language, data.nivel);
+    if (data.Language && data.nivel) {
+      await saveUser(userId, name, email, data.nivel, data.Language);
+      navigate({
+        to: "/",
+      });
+    }
     if (!data.Language)
       setError("Language", {
         message: "Campo obrigatório",
@@ -58,15 +71,15 @@ function RouteComponent() {
   };
 
   const handleChooseLangauge = (value: TypeLanguage) => {
-    setValue("Language", value);
+    setValue("Language", value, { shouldValidate: true });
 
-    setError("Language", { message: "" });
+    clearErrors("Language");
   };
 
-  const handleChooseNivel = (value: typeNivel) => {
-    setValue("nivel", value);
+  const handleChooseNivel = (value: TypeNivel) => {
+    setValue("nivel", value, { shouldValidate: true });
 
-    setError("nivel", { message: "" });
+    clearErrors("nivel");
   };
 
   return (
@@ -105,7 +118,9 @@ function RouteComponent() {
                 </SelectContent>
               </Select>
               {errors.Language && (
-                <p className="text-sm text-red-500">{errors.Language.message}</p>
+                <p className="text-sm text-red-500">
+                  {errors.Language.message}
+                </p>
               )}
             </div>
 
@@ -117,9 +132,9 @@ function RouteComponent() {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Qual seu nível nesse idioma</SelectLabel>
-                    <SelectItem value="beginner">Iniciante</SelectItem>
-                    <SelectItem value="intermediate">Intermediário</SelectItem>
-                    <SelectItem value="advanced">Avançado</SelectItem>
+                    <SelectItem value="iniciante">Iniciante</SelectItem>
+                    <SelectItem value="intermediario">Intermediário</SelectItem>
+                    <SelectItem value="avancado">Avançado</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
