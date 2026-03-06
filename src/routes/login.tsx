@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 
 import { InputField } from "@/components/InputField";
@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import TitleSection from "@/components/TitleSection";
 import LinkNavigation from "@/components/LinkNavigation";
 import ImageSource from "@/components/ImageSource";
+import { userLogin } from "@/utils/firebase/firebase.auth";
 
 export const Route = createFileRoute("/login")({
   component: RouteComponent,
@@ -24,10 +25,15 @@ function RouteComponent() {
     formState: { errors },
   } = useForm<FormData>();
 
-  const handleSubmitClick = (data: FormData) => {
-    console.log(data.email);
-    console.log(data.name);
-    console.log(data.password);
+  const handleSubmitClick = async (data: FormData) => {
+    if (data.email && data.password) {
+      const user = await userLogin(data.email, data.password);
+      if (user)
+        throw redirect({
+          to: "/",
+          replace: true,
+        });
+    }
   };
 
   return (
@@ -83,6 +89,10 @@ function RouteComponent() {
                 minLength: {
                   value: 6,
                   message: "A senha precisa ter no mínimo 6 caracteres",
+                },
+                maxLength: {
+                  value: 10,
+                  message: "o username só pode no maximo 10 caracteres",
                 },
               }}
               errorValidate={errors.password}
