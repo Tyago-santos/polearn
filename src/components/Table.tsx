@@ -113,7 +113,7 @@ export function TableComponet() {
       <Table className="m-auto w-full">
         <TableHeader>
           <TableRow className="border-b border-border/80 hover:bg-transparent">
-            <TableHead className="lg:w-[45z%]  g:w-[50]  py-4 g:text-base text-[10px]  font-semibold text-foreground sm:text-lg">
+            <TableHead className="w-[45%]  g:w-[50]  py-4 g:text-base text-[10px]  font-semibold text-foreground sm:text-lg">
               Nome
             </TableHead>
             <TableHead className="py-4 lg:text-base text-[10px] font-semibold text-foreground sm:text-lg">
