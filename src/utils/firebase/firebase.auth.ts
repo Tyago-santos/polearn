@@ -4,6 +4,7 @@ import {
   type Unsubscribe,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signOut,
 } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { auth } from "./firebase.config"; // Sua inicialização do Firebase
@@ -63,12 +64,24 @@ export function userLogged(
 ): Unsubscribe {
   return onAuthStateChanged(auth, (user: User | null) => {
     onUserChanged?.(user);
-
-    if (user) {
-      // Usuário está logado
-      console.log(user.uid);
-    } else {
-      // Usuário está deslogado
-    }
   });
 }
+
+export function getCurrentUser(): Promise<User | null> {
+  return new Promise((resolve) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe();
+      resolve(user);
+    });
+  });
+}
+
+export const userLogout = async () => {
+  try {
+    await signOut(auth);
+    console.log("User signed out");
+    // Redirect to login page here
+  } catch (error) {
+    console.error("Error signing out:", error);
+  }
+};
