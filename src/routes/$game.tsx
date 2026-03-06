@@ -20,10 +20,6 @@ function Game() {
             <button className="cursor-pointer rounded-full border-2 border-red-500 px-3 py-2 text-[10px] font-bold text-red-500 transition-colors hover:bg-red-500 hover:text-white md:px-5 md:text-base">
               Desistir
             </button>
-
-            <button className="cursor-pointer rounded-full border-2 border-emerald-500 px-3 py-2 text-[10px] font-bold text-emerald-600 transition-colors hover:bg-emerald-500 hover:text-white md:px-5 md:text-base">
-              Verificar a ordem
-            </button>
           </div>
         </nav>
       </header>

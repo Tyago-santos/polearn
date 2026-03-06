@@ -115,6 +115,11 @@ export default function GameDrag() {
             )}
           </Droppable>
         </DragDropContext>
+        <div className="text-right">
+          <button className="cursor-pointer rounded-full border-2 border-blue-500 px-3 py-2 text-[10px] font-bold text-blue-600 transition-colors hover:bg-blue-500 hover:text-white md:px-5 md:text-base">
+            Verificar a ordem
+          </button>
+        </div>
       </div>
     </section>
   );
