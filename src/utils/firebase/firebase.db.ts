@@ -11,12 +11,20 @@ import {
 
 const db = getFirestore();
 
-export async function saveUser(userId: string, name: string, email: string) {
+export async function saveUser(
+  userId: string,
+  name: string,
+  email: string,
+  nivel: string,
+  language: string,
+) {
   await setDoc(
     doc(db, "usuarios", userId),
     {
       name: name,
       email: email,
+      nivel: nivel,
+      language: language,
     },
     { merge: true },
   );
