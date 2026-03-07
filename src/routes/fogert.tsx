@@ -3,6 +3,7 @@ import { InputField } from "@/components/InputField";
 import LinkNavigation from "@/components/LinkNavigation";
 import TitleSection from "@/components/TitleSection";
 import { Button } from "@/components/ui/button";
+import { userFogert } from "@/utils/firebase/firebase.auth";
 import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 
@@ -23,10 +24,8 @@ function RouteComponent() {
     formState: { errors },
   } = useForm<FormData>();
 
-  const handleSubmitClick = (data: FormData) => {
-    console.log(data.email);
-    console.log(data.name);
-    console.log(data.password);
+  const handleSubmitClick = async ({ email }: FormData) => {
+    if (email) await userFogert(email);
   };
 
   return (
@@ -62,7 +61,7 @@ function RouteComponent() {
               passwodShow={false}
             />
 
-            <InputField
+            {/* <InputField
               type="password"
               placeholder="123456"
               registerType="password"
@@ -77,7 +76,7 @@ function RouteComponent() {
               }}
               errorValidate={errors.password}
               passwodShow={true}
-            />
+            /> */}
 
             <Button className="h-11 w-full font-semibold shadow-md">
               Redefinir

@@ -2,7 +2,7 @@ import { createRootRoute, Outlet, redirect } from "@tanstack/react-router";
 import { getCurrentUser } from "@/utils/firebase/firebase.auth";
 // import { hasCompletedProfile } from "@/utils/..."; // exemplo
 
-const guestOnly = ["/login", "/register"];
+const guestOnly = ["/login", "/register", "/fogert"];
 
 export const Route = createRootRoute({
   component: RootLayout,
