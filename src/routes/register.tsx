@@ -120,7 +120,7 @@ function Register() {
             <div className="border-t border-border/70 pt-1">
               <LinkNavigation
                 describeNavigate="Já possui uma conta? | Faça login"
-                navigate="/register"
+                navigate="/login"
               />
             </div>
           </div>

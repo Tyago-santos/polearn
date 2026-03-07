@@ -57,6 +57,7 @@ function RouteComponent() {
       await saveUser(userId, name, email, data.nivel, data.Language);
       navigate({
         to: "/",
+        replace: true,
       });
     }
     if (!data.Language)
