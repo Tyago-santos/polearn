@@ -6,6 +6,8 @@ import {
   type DropResult,
 } from "@hello-pangea/dnd";
 import { run } from "@/utils/gemini/ia";
+import userStore from "@/utils/zustand/userStore";
+import { Button } from "./ui/button";
 
 type DraggableWord = {
   id: string;
@@ -29,9 +31,13 @@ export default function GameDrag() {
   const [dataResponse, setDataResponse] = useState<QuestionType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [explanationState, setExplanationState] = useState(false);
+
+  const { setPointCorrect, setPointError, pointCorrect, pointError } =
+    userStore();
 
   const answerCount = dataResponse.length;
-  const [answerActive] = useState(0);
+  const [answerActive, setAnswerActive] = useState(0);
   const currentSentence = dataResponse[answerActive];
   const [wordsByAnswer, setWordsByAnswer] = useState<
     Record<number, DraggableWord[]>
@@ -111,10 +117,18 @@ export default function GameDrag() {
       .map((res) => res)
       .join(" ");
 
-    console.log(correctValue);
-    console.log(userSentence);
+    setAnswerActive((prev) => prev + 1);
 
-    if (correctValue === userSentence) alert("aletoru");
+    if (correctValue.toLocaleLowerCase() === userSentence) {
+      setPointCorrect(1);
+      setExplanationState(false);
+    } else {
+      setPointError(1);
+      setExplanationState(!explanationState);
+    }
+
+    console.log(pointCorrect);
+    console.log(pointError);
   };
 
   if (loading) {
@@ -136,9 +150,24 @@ export default function GameDrag() {
   if (!currentSentence) {
     return (
       <section className="max-w-4xl mx-auto mt-6 rounded-3xl border border-blue-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
-        <p className="text-sm font-bold text-blue-600">
-          Nenhuma frase foi retornada.
-        </p>
+        <div className="flex gap-5">
+          <article>
+            <h4 className="text-green-500 font-extrabold">Acertos</h4>
+            <span className="border-3 border-green-500 text-green-500 flex justify-center items-center rounded-full size-20">
+              {pointCorrect}
+            </span>
+          </article>
+          <article>
+            <h4 className="text-red-500 font-extrabold">erradas</h4>
+            <span className="border-3 border-red-500 text-red-500 flex justify-center items-center rounded-full size-20">
+              {pointError}
+            </span>
+          </article>
+        </div>
+
+        <div>
+          <Button className="bg-blue-500">Encerrar</Button>
+        </div>
       </section>
     );
   }
@@ -208,6 +237,12 @@ export default function GameDrag() {
           </button>
         </div>
       </div>
+
+      {explanationState && (
+        <div className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-4 md:p-5">
+          {currentSentence.explanation}
+        </div>
+      )}
     </section>
   );
 }
