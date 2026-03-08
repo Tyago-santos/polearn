@@ -1,14 +1,38 @@
-import beginnerQuiz from "@/api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import ModalAlert from "@/components/ModalAlert";
+import { run } from "@/utils/gemini/ia";
+
+type ResponseType = {
+  options: string;
+  isCorrect: boolean;
+};
+
+type QuestionType = {
+  id: number;
+  question: string;
+  response: ResponseType[];
+};
 
 export default function GameQuestion() {
-  const [answerCount] = useState(beginnerQuiz.length);
-  const [answerActive] = useState(6);
+  const [dataResponse, setDataResponse] = useState<QuestionType[]>([]);
+
+  useEffect(() => {
+    const getResponse = async () => {
+      const responseIa = await run("question");
+      setDataResponse(responseIa);
+    };
+
+    getResponse();
+  }, []);
+  const [answerActive] = useState(8);
   const [openModal, setOpenModal] = useState(false);
 
-  const calcAnswer = (answerActive / answerCount) * 100;
+  console.log(dataResponse);
+
+  const answerCount = dataResponse.length;
+  const currentQuestion = dataResponse[answerActive];
+  const calcAnswer = answerCount > 0 ? (answerActive / answerCount) * 100 : 0;
 
   return (
     <section className="max-w-4xl mx-auto mt-6 rounded-3xl border border-slate-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
@@ -28,17 +52,17 @@ export default function GameQuestion() {
 
       <div className="mt-8">
         <p className="mb-6 text-3xl font-extrabold leading-snug text-blue-800 md:text-3xl">
-          {beginnerQuiz[answerActive].question}
+          {currentQuestion?.question ?? "Carregando pergunta..."}
         </p>
 
         <div className="space-y-3">
-          {beginnerQuiz[answerActive].options.map((option, i) => (
+          {currentQuestion?.response.map(({ options }, i) => (
             <div key={i}>
               <span
                 onClick={() => setOpenModal(true)}
                 className="flex cursor-pointer items-center rounded-2xl border-2 border-blue-200 bg-white px-4 py-4 text-lg font-semibold text-slate-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-400 hover:bg-blue-500 hover:text-white"
               >
-                {option}
+                {options}
               </span>
             </div>
           ))}
