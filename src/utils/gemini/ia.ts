@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Substitua pela sua chave real
-const genAI = new GoogleGenerativeAI("AIzaSyAG_xb1EH1J2Z9RSSCCnp5oVgmGCDXGK9o");
+const genAI = new GoogleGenerativeAI("AIzaSyC64i4brQCK7gs-5Y9GGs-FVIIfGWirjCo");
 
 function parseJsonResponse(text: string) {
   const sanitized = text
@@ -49,14 +49,14 @@ export async function run(typeGame: string) {
     "id": 1,
     "question": "They ___ soccer on Sunday.",
     "options": ["play", "plays", "played", "playing"],
-    "correct": "play",
+    "correct": "[play"],
     "explanation": ""
   }
 ]`;
       break;
 
     case "drop":
-      prompt = `Retorne apenas JSON valido no formato de array com 10 frases de ingles iniciante:
+      prompt = `Retorne apenas JSON valido no formato de array com 10 frases de ingles iniciante tambem faca uma explicação em português no campo de explanaation tambem crie frase sem pontuação:
 [
   {
     "wordsShuffled": ["watching", "are", "movie", "we", "a"],
