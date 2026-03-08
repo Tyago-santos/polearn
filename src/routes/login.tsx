@@ -7,6 +7,8 @@ import TitleSection from "@/components/TitleSection";
 import LinkNavigation from "@/components/LinkNavigation";
 import ImageSource from "@/components/ImageSource";
 import { userLogin } from "@/utils/firebase/firebase.auth";
+import { useState } from "react";
+import Loading from "@/components/Loading";
 
 export const Route = createFileRoute("/login")({
   component: RouteComponent,
@@ -25,16 +27,24 @@ function RouteComponent() {
     formState: { errors },
   } = useForm<FormData>();
 
+  const [loadingState, setLoadingState] = useState(false);
+
   const handleSubmitClick = async (data: FormData) => {
     if (data.email && data.password) {
       const user = await userLogin(data.email, data.password);
-      if (user)
+      setLoadingState(true);
+      if (user) {
+        setLoadingState(false);
+
         throw redirect({
           to: "/",
           replace: true,
         });
+      }
     }
   };
+
+  if (loadingState) return <Loading />;
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-background px-5 py-8">

@@ -9,6 +9,8 @@ import ImageSource from "@/components/ImageSource";
 
 import userStore from "@/utils/zustand/userStore";
 import { userRegister } from "@/utils/firebase/firebase.auth";
+import Loading from "@/components/Loading";
+import { useState } from "react";
 
 export const Route = createFileRoute("/register")({
   component: Register,
@@ -30,14 +32,18 @@ function Register() {
   const navigate = useNavigate();
 
   const { setName, setEmail, setUserId } = userStore();
+  const [loadingState, setLoadingState] = useState(false);
 
   const handleSubmitClick = async (data: FormData) => {
     if (data.email && data.name && data.password) {
+      setLoadingState(true);
       const user = await userRegister(data.email, data.password);
       if (user) {
         setEmail(data.email);
         setName(data.name);
         setUserId(user.uid);
+
+        setLoadingState(false);
 
         navigate({
           to: "/nivel_person",
@@ -45,6 +51,8 @@ function Register() {
       }
     }
   };
+
+  if (loadingState) return <Loading />;
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-background px-4 py-8">
