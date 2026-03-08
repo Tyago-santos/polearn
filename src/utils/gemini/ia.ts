@@ -1,45 +1,79 @@
-export async function getInforIa() {
-  // 1. Pega o dado que veio do formulário
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyBKsVu08lBPg9ykbzIBX7BerBVsXIEZGiA`;
+// Substitua pela sua chave real
+const genAI = new GoogleGenerativeAI("AIzaSyAG_xb1EH1J2Z9RSSCCnp5oVgmGCDXGK9o");
 
-  const requestBody = {
-    contents: [
-      {
-        parts: [
-          {
-            // 2. Insere o dado no prompt dinamicamente
-            text: `Gere 10  perguntas estruturada ingles para iniciante 
- [
-  {
-    id: 1,
-    question: "",
-    tema: "",
-    response: [
-      { options: "", isCorrect: Boolean },
-      { options: "", isCorrect: Boolean },
-      { options: "", isCorrect: Boolean },
-      { options: "", isCorrect: Boolean }
-    ]
-  }] `,
-          },
-        ],
-      },
-    ],
+function parseJsonResponse(text: string) {
+  const sanitized = text
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/```$/i, "")
+    .trim();
+
+  return JSON.parse(sanitized);
+}
+
+export async function run(typeGame: string) {
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash",
     generationConfig: {
-      response_mime_type: "application/json",
-      // response_schema: schemaString
+      responseMimeType: "application/json",
     },
-  };
-
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(requestBody),
   });
 
-  const data = await response.json();
-  const aiText = JSON.parse(data.candidates[0].content.parts[0].text);
+  let prompt = "";
 
-  return aiText;
+  switch (typeGame) {
+    case "question":
+      prompt = `Retorne apenas JSON valido no formato de array com 10 perguntas de ingles iniciante:
+[
+  {
+    "id": 1,
+    "question": "",
+    "tema": "",
+    "response": [
+      { "options": "", "isCorrect": false },
+      { "options": "", "isCorrect": false },
+      { "options": "", "isCorrect": false },
+      { "options": "", "isCorrect": true }
+    ],
+    "explanation": ""
+  }
+]`;
+      break;
+
+    case "drag":
+      prompt = `Retorne apenas JSON valido no formato de array com 10 frases de ingles iniciante e e taambem com explicação da perguntas:
+[
+  {
+    "id": 1,
+    "question": "They ___ soccer on Sunday.",
+    "options": ["play", "plays", "played", "playing"],
+    "correct": "play",
+    "explanation": ""
+  }
+]`;
+      break;
+
+    case "drop":
+      prompt = `Retorne apenas JSON valido no formato de array com 10 frases de ingles iniciante:
+[
+  {
+    "wordsShuffled": ["watching", "are", "movie", "we", "a"],
+    "wordsCorrect": ["We", "are", "watching", "a", "movie"],
+    "correctSentence": "We are watching a movie.",
+    "explanation": ""
+  }
+]`;
+      break;
+
+    default:
+      throw new Error(`Tipo de jogo invalido: ${typeGame}`);
+  }
+
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+
+  const dadosRecuperados = parseJsonResponse(response.text());
+  return dadosRecuperados;
 }
