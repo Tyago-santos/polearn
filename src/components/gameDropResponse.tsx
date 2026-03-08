@@ -1,11 +1,12 @@
-import apiQuestionDrop from "@/apiDrop";
+// import data from "@/apiDrop";
+import { run } from "@/utils/gemini/ia";
 import {
   DragDropContext,
   Draggable,
   Droppable,
   type DropResult,
 } from "@hello-pangea/dnd";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type DraggableWord = {
   id: string;
@@ -14,23 +15,60 @@ type DraggableWord = {
 
 const QUESTION_INDEX = 0;
 
+type QuestionType = {
+  id: number;
+  question: string;
+  options: string[];
+  correct: string;
+};
+
 export default function GameDropResponse() {
-  const [answerCount] = useState(apiQuestionDrop.length);
+  const [dataResponse, setDataResponse] = useState<QuestionType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getResponse = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const responseIa = await run("drag");
+        setDataResponse(Array.isArray(responseIa) ? responseIa : []);
+      } catch (err) {
+        setError("Nao foi possivel carregar as frases.");
+        setDataResponse([]);
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getResponse();
+  }, []);
+
+  const answerCount = dataResponse.length;
   const [answerActive] = useState(QUESTION_INDEX + 1);
-  const question = apiQuestionDrop[QUESTION_INDEX];
-  const [optionBank, setOptionBank] = useState<DraggableWord[]>(
-    question.options.map((option, index) => ({
-      id: `${question.id}-${option}-${index}`,
-      value: option,
-    })),
-  );
+  const question = dataResponse[QUESTION_INDEX];
+  const [optionBank, setOptionBank] = useState<DraggableWord[]>([]);
   const [slots, setSlots] = useState<(DraggableWord | null)[]>([null]);
 
   const mountedSentence = useMemo(() => {
+    if (!question) {
+      return "Carregando frase...";
+    }
     const selectedWord = slots[0]?.value ?? "___";
     return question.question.replace("___", selectedWord);
-  }, [question.question, slots]);
+  }, [question, slots]);
 
+  useEffect(() => {
+    if (!question) return;
+    setOptionBank(
+      question.options.map((option, index) => ({
+        id: `${question.id}-${option}-${index}`,
+        value: option,
+      })),
+    );
+  }, [question]);
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
 
@@ -81,7 +119,33 @@ export default function GameDropResponse() {
     }
   };
 
-  const calcAnswer = (answerActive / answerCount) * 100;
+  const calcAnswer = answerCount > 0 ? (answerActive / answerCount) * 100 : 0;
+
+  if (loading) {
+    return (
+      <section className="max-w-4xl mx-auto mt-6 rounded-3xl border border-blue-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
+        <p className="text-sm font-bold text-blue-600">Carregando frases...</p>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="max-w-4xl mx-auto mt-6 rounded-3xl border border-red-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
+        <p className="text-sm font-bold text-red-600">{error}</p>
+      </section>
+    );
+  }
+
+  if (!question) {
+    return (
+      <section className="max-w-4xl mx-auto mt-6 rounded-3xl border border-blue-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
+        <p className="text-sm font-bold text-blue-600">
+          Nenhuma frase foi retornada.
+        </p>
+      </section>
+    );
+  }
 
   return (
     <section className="max-w-4xl mx-auto mt-6 rounded-3xl border border-blue-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
