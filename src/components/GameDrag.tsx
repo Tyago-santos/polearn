@@ -1,12 +1,11 @@
-import beginnerQuiz from "@/api";
-import sentences from "@/apiSetences";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DragDropContext,
   Droppable,
   Draggable,
   type DropResult,
 } from "@hello-pangea/dnd";
+import { run } from "@/utils/gemini/ia";
 
 type DraggableWord = {
   id: string;
@@ -19,18 +18,64 @@ const toDraggableWords = (words: string[]): DraggableWord[] =>
     value: word,
   }));
 
+type QuestionType = {
+  wordsShuffled: string[];
+  wordsCorrect: string[];
+  correctSentence: string;
+  explanation: string;
+};
+
 export default function GameDrag() {
-  const [answerCount] = useState(beginnerQuiz.length);
-  const [answerActive] = useState(6);
-  const currentSentence = sentences[answerActive];
+  const [dataResponse, setDataResponse] = useState<QuestionType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const answerCount = dataResponse.length;
+  const [answerActive] = useState(0);
+  const currentSentence = dataResponse[answerActive];
   const [wordsByAnswer, setWordsByAnswer] = useState<
     Record<number, DraggableWord[]>
-  >(() => ({
-    [answerActive]: toDraggableWords(currentSentence?.wordsShuffled ?? []),
-  }));
+  >({});
+
   const words =
     wordsByAnswer[answerActive] ??
     toDraggableWords(currentSentence?.wordsShuffled ?? []);
+
+  useEffect(() => {
+    const getResponse = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const responseIa = await run("drop");
+        setDataResponse(Array.isArray(responseIa) ? responseIa : []);
+      } catch (err) {
+        setError("Nao foi possivel carregar as frases.");
+        setDataResponse([]);
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getResponse();
+  }, []);
+
+  useEffect(() => {
+    if (!currentSentence) {
+      return;
+    }
+
+    setWordsByAnswer((currentByAnswer) => {
+      if (currentByAnswer[answerActive]) {
+        return currentByAnswer;
+      }
+
+      return {
+        ...currentByAnswer,
+        [answerActive]: toDraggableWords(currentSentence.wordsShuffled),
+      };
+    });
+  }, [answerActive, currentSentence]);
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
@@ -57,14 +102,53 @@ export default function GameDrag() {
     });
   };
 
-  const calcAnswer = (answerActive / answerCount) * 100;
+  const calcAnswer = answerCount > 0 ? (answerActive / answerCount) * 100 : 0;
+
+  const handleClickVerifyResponse = () => {
+    const currentWords = wordsByAnswer[answerActive] ?? [];
+    const userSentence = currentWords.map((w) => w.value).join(" ");
+    const correctValue = currentSentence.wordsCorrect
+      .map((res) => res)
+      .join(" ");
+
+    console.log(correctValue);
+    console.log(userSentence);
+
+    if (correctValue === userSentence) alert("aletoru");
+  };
+
+  if (loading) {
+    return (
+      <section className="max-w-4xl mx-auto mt-6 rounded-3xl border border-blue-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
+        <p className="text-sm font-bold text-blue-600">Carregando frases...</p>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="max-w-4xl mx-auto mt-6 rounded-3xl border border-red-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
+        <p className="text-sm font-bold text-red-600">{error}</p>
+      </section>
+    );
+  }
+
+  if (!currentSentence) {
+    return (
+      <section className="max-w-4xl mx-auto mt-6 rounded-3xl border border-blue-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
+        <p className="text-sm font-bold text-blue-600">
+          Nenhuma frase foi retornada.
+        </p>
+      </section>
+    );
+  }
 
   return (
     <section className="max-w-4xl mx-auto mt-6 rounded-3xl border border-blue-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
       <div className="mb-5 flex items-center justify-between text-sm font-bold text-blue-600">
         <span>Monte a frase na ordem correta</span>
         <span>
-          {answerActive}/{answerCount}
+          {answerActive + 1}/{answerCount}
         </span>
       </div>
 
@@ -116,7 +200,10 @@ export default function GameDrag() {
           </Droppable>
         </DragDropContext>
         <div className="text-right">
-          <button className="cursor-pointer rounded-full border-2 border-blue-500 px-3 py-2 text-[10px] font-bold text-blue-600 transition-colors hover:bg-blue-500 hover:text-white md:px-5 md:text-base">
+          <button
+            onClick={handleClickVerifyResponse}
+            className="cursor-pointer rounded-full border-2 border-blue-500 px-3 py-2 text-[10px] font-bold text-blue-600 transition-colors hover:bg-blue-500 hover:text-white md:px-5 md:text-base"
+          >
             Verificar a ordem
           </button>
         </div>
