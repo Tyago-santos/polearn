@@ -1,15 +1,19 @@
 import {
-  getFirestore,
   doc,
   setDoc,
   getDoc,
   collection,
   getDocs,
-  query,
-  where,
 } from "firebase/firestore";
+import userStore from "../zustand/userStore";
+import { db } from "./firebase.config";
 
-const db = getFirestore();
+export type RankingUser = {
+  id: string;
+  name: string;
+  nivel: string;
+  point: number;
+};
 
 export async function saveUser(
   userId: string,
@@ -35,19 +39,53 @@ export async function getUserById(userId: string) {
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
-    console.log("Dados do usuário:", docSnap.data());
     return docSnap.data();
   } else {
-    console.log("Usuário não encontrado!");
     return null;
   }
 }
 
 export async function getUsers() {
-  const q = query(collection(db, "usuarios"), where("isAdmin", "==", true));
-  const querySnapshot = await getDocs(q);
+  const querySnapshot = await getDocs(collection(db, "usuarios"));
 
-  querySnapshot.forEach((doc) => {
-    console.log(doc.id, " => ", doc.data());
+  const users: RankingUser[] = querySnapshot.docs.map((item) => {
+    const data = item.data();
+
+    return {
+      id: item.id,
+      name: typeof data.name === "string" ? data.name : "Sem nome",
+      nivel: typeof data.nivel === "string" ? data.nivel : "Nao informado",
+      point: typeof data.point === "number" ? data.point : 0,
+    };
   });
+
+  return users.sort((a, b) => b.point - a.point);
+}
+
+export async function userSavePoints(userId: string) {
+  const docRef = doc(db, "usuarios", userId);
+  const docSnap = await getDoc(docRef);
+  const { pointCorrect } = userStore.getState();
+
+  if (docSnap.exists()) {
+    if (docSnap.data().point) {
+      if (pointCorrect > docSnap.data().point) {
+        await setDoc(
+          doc(db, "usuarios", userId),
+          {
+            point: pointCorrect,
+          },
+          { merge: true },
+        );
+      }
+    } else {
+      await setDoc(
+        doc(db, "usuarios", userId),
+        {
+          point: pointCorrect,
+        },
+        { merge: true },
+      );
+    }
+  }
 }
