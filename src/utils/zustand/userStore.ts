@@ -18,6 +18,7 @@ type UserStore = {
 
   setPointCorrect: (pointCorrect: number) => void;
   setPointError: (pointError: number) => void;
+  resetPoints: () => void;
 };
 
 export const userStore = create<UserStore>((set) => ({
@@ -27,8 +28,8 @@ export const userStore = create<UserStore>((set) => ({
   nivel: "",
   userId: "",
 
-  pointCorrect: 1,
-  pointError: 1,
+  pointCorrect: 0,
+  pointError: 0,
 
   setEmail: (email) => set(() => ({ email })),
   setName: (name) => set(() => ({ name })),
@@ -39,6 +40,7 @@ export const userStore = create<UserStore>((set) => ({
     set((state) => ({ pointCorrect: state.pointCorrect + pointCorrect })),
   setPointError: (pointError) =>
     set((state) => ({ pointError: state.pointError + pointError })),
+  resetPoints: () => set(() => ({ pointCorrect: 0, pointError: 0 })),
 }));
 
 export default userStore;
