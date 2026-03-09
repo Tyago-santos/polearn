@@ -1,11 +1,11 @@
 import { createFileRoute, useBlocker } from "@tanstack/react-router";
 import { Header } from "../components/Header";
-import { TableComponet } from "../components/Table";
 import { CardComponent } from "@/components/Card";
 import TitleSection from "@/components/TitleSection";
 import Footer from "@/components/Footer";
 import ModalQuestionConfig from "@/components/ModalQuestionConfig";
 import { useState } from "react";
+import { TableComponet } from "@/components/Table";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -14,7 +14,6 @@ export const Route = createFileRoute("/")({
 function Home() {
   useBlocker({
     shouldBlockFn: ({ next }) => {
-      // Exemplo: Bloquear ao tentar ir para o dashboard
       return next.fullPath.includes("/login");
     },
   });

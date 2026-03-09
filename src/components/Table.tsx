@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { getUsers, type RankingUser } from "@/utils/firebase/firebase.db";
 import {
   Table,
   TableBody,
@@ -7,92 +9,45 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const getRandomNivel = () => {
-  const niveis = ["iniciante", "intermediario", "avancado"];
-  return niveis[Math.floor(Math.random() * niveis.length)];
-};
-
 const nivelStyleMap: Record<string, string> = {
   iniciante: "bg-emerald-500/10 text-emerald-700 border border-emerald-500/30",
   intermediario: "bg-amber-500/10 text-amber-700 border border-amber-500/30",
   avancado: "bg-sky-500/10 text-sky-700 border border-sky-500/30",
 };
 
-const scoreStyleMap: Record<string, string> = {
-  Paid: "bg-emerald-500/10 text-emerald-700 border border-emerald-500/30",
-  Pending: "bg-amber-500/10 text-amber-700 border border-amber-500/30",
-  Unpaid: "bg-rose-500/10 text-rose-700 border border-rose-500/30",
+const normalizeNivel = (nivel: string) => {
+  const value = nivel.toLowerCase();
+
+  if (value.includes("inic")) return "iniciante";
+  if (value.includes("inter")) return "intermediario";
+  if (value.includes("avan")) return "avancado";
+
+  return "iniciante";
 };
 
-const invoices = [
-  {
-    invoice: "INV001",
-    paymentStatus: "Paid",
-    nivel: getRandomNivel(),
-  },
-  {
-    invoice: "INV002",
-    paymentStatus: "Pending",
-    nivel: getRandomNivel(),
-  },
-  {
-    invoice: "INV003",
-    paymentStatus: "Unpaid",
-    nivel: getRandomNivel(),
-  },
-  {
-    invoice: "INV004",
-    paymentStatus: "Paid",
-    nivel: getRandomNivel(),
-  },
-  {
-    invoice: "INV005",
-    paymentStatus: "Paid",
-    nivel: getRandomNivel(),
-  },
-  {
-    invoice: "INV006",
-    paymentStatus: "Pending",
-    nivel: getRandomNivel(),
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    nivel: getRandomNivel(),
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    nivel: getRandomNivel(),
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    nivel: getRandomNivel(),
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    nivel: getRandomNivel(),
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    nivel: getRandomNivel(),
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    nivel: getRandomNivel(),
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    nivel: getRandomNivel(),
-  },
-];
-
 export function TableComponet() {
+  const [users, setUsers] = useState<RankingUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const allUsers = await getUsers();
+        setUsers(allUsers);
+      } catch (err) {
+        setError("Nao foi possivel carregar o ranking.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUsers();
+  }, []);
+
   return (
     <div className="w-full rounded-2xl border border-border/70 bg-card/90 p-3 shadow-xl backdrop-blur-sm sm:p-5">
       <div className="flex gap-4">
@@ -125,30 +80,44 @@ export function TableComponet() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {invoices.slice(0, 9).map((invoice) => (
+          {loading && (
+            <TableRow className="border-border/60">
+              <TableCell className="py-4 text-sm" colSpan={3}>
+                Carregando ranking...
+              </TableCell>
+            </TableRow>
+          )}
+
+          {error && (
+            <TableRow className="border-border/60">
+              <TableCell className="py-4 text-sm text-red-600" colSpan={3}>
+                {error}
+              </TableCell>
+            </TableRow>
+          )}
+
+          {!loading &&
+            !error &&
+            users.slice(0, 9).map((user) => (
             <TableRow
               className="cursor-pointer border-border/60 transition-colors hover:bg-muted/40"
-              key={invoice.invoice}
+              key={user.id}
             >
               <TableCell className="py-4 font-medium text-[10px] text-foreground/95">
-                {invoice.invoice}
+                {user.name}
               </TableCell>
               <TableCell className="py-4">
                 <span
-                  className={`inline-flex rounded-full  px-3 py-1 text-xs font-semibold capitalize ${nivelStyleMap[invoice.nivel]}`}
+                  className={`inline-flex rounded-full  px-3 py-1 text-xs font-semibold capitalize ${nivelStyleMap[normalizeNivel(user.nivel)]}`}
                 >
-                  {invoice.nivel}
+                  {user.nivel}
                 </span>
               </TableCell>
-              <TableCell className="py-4 text-right">
-                <span
-                  className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${scoreStyleMap[invoice.paymentStatus]}`}
-                >
-                  {invoice.paymentStatus}
-                </span>
+              <TableCell className="py-4 text-right font-semibold text-foreground/95">
+                {user.point}
               </TableCell>
             </TableRow>
-          ))}
+            ))}
         </TableBody>
       </Table>
     </div>
