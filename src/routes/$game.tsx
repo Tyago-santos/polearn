@@ -3,12 +3,16 @@ import GameDropResponse from "@/components/gameDropResponse";
 import GameQuestion from "@/components/GameQuestion";
 import { createFileRoute, useParams } from "@tanstack/react-router";
 
+import ModalAlert from "@/components/ModalAlert";
+import { useState } from "react";
+
 export const Route = createFileRoute("/$game")({
   component: Game,
 });
 
 function Game() {
   const params = useParams({ from: "/$game" });
+  const [openModal, setOpenModal] = useState(false);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-sky-50 via-white to-emerald-50 px-4 py-6 md:py-10">
@@ -17,7 +21,10 @@ function Game() {
           <img className="size-16 md:size-20" src="/logo.png" alt="logo" />
 
           <div className="flex gap-3">
-            <button className="cursor-pointer rounded-full border-2 border-red-500 px-3 py-2 text-[10px] font-bold text-red-500 transition-colors hover:bg-red-500 hover:text-white md:px-5 md:text-base">
+            <button
+              onClick={() => setOpenModal(true)}
+              className="cursor-pointer rounded-full border-2 border-red-500 px-3 py-2 text-[10px] font-bold text-red-500 transition-colors hover:bg-red-500 hover:text-white md:px-5 md:text-base"
+            >
               Desistir
             </button>
           </div>
@@ -27,6 +34,7 @@ function Game() {
       {params.game === "question" && <GameQuestion />}
       {params.game === "drag" && <GameDrag />}
       {params.game === "drop" && <GameDropResponse />}
+      {openModal && <ModalAlert onClose={() => setOpenModal(false)} />}
     </main>
   );
 }
