@@ -1,31 +1,65 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
+import { userStore } from "../zustand/userStore";
 
 // Substitua pela sua chave real
-const genAI = new GoogleGenerativeAI("AIzaSyC64i4brQCK7gs-5Y9GGs-FVIIfGWirjCo");
 
-function parseJsonResponse(text: string) {
-  const sanitized = text
+function getOpenAIClient() {
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+
+  return new OpenAI({
+    apiKey,
+    dangerouslyAllowBrowser: true,
+  });
+}
+
+function getOpenAIModel() {
+  return import.meta.env.VITE_OPENAI_MODEL || "gpt-4o";
+}
+
+function sanitizeJsonText(text: string) {
+  return text
     .replace(/^```json\s*/i, "")
     .replace(/^```\s*/i, "")
     .replace(/```$/i, "")
     .trim();
+}
 
-  return JSON.parse(sanitized);
+function extractJsonCandidate(text: string) {
+  const arrayStart = text.indexOf("[");
+  const arrayEnd = text.lastIndexOf("]");
+  if (arrayStart !== -1 && arrayEnd > arrayStart) {
+    return text.slice(arrayStart, arrayEnd + 1);
+  }
+
+  const objectStart = text.indexOf("{");
+  const objectEnd = text.lastIndexOf("}");
+  if (objectStart !== -1 && objectEnd > objectStart) {
+    return text.slice(objectStart, objectEnd + 1);
+  }
+
+  return text;
+}
+
+function parseJsonResponse(text: string) {
+  const sanitized = sanitizeJsonText(text);
+
+  try {
+    return JSON.parse(sanitized);
+  } catch {
+    const extracted = extractJsonCandidate(sanitized);
+    return JSON.parse(extracted);
+  }
 }
 
 export async function run(typeGame: string) {
-  const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
-    generationConfig: {
-      responseMimeType: "application/json",
-    },
-  });
+  const { nivel, language } = userStore.getState();
+  const openai = getOpenAIClient();
 
   let prompt = "";
 
   switch (typeGame) {
     case "question":
-      prompt = `Retorne apenas JSON valido no formato de array com 10 perguntas de ingles iniciante:
+      prompt = `Retorne apenas JSON valido no formato de array com 10 frases de ${language} no nivel ${nivel} e  tambem com explicação da perguntas:
 [
   {
     "id": 1,
@@ -43,20 +77,20 @@ export async function run(typeGame: string) {
       break;
 
     case "drag":
-      prompt = `Retorne apenas JSON valido no formato de array com 10 frases de ingles iniciante e e taambem com explicação da perguntas:
+      prompt = `Retorne apenas JSON valido no formato de array com 10 frases no idioma ${language} no nivle ${nivel} e  tambem com explicação da perguntas:
 [
   {
     "id": 1,
     "question": "They ___ soccer on Sunday.",
     "options": ["play", "plays", "played", "playing"],
-    "correct": "[play"],
+    "correct": ["play"],
     "explanation": ""
   }
 ]`;
       break;
 
     case "drop":
-      prompt = `Retorne apenas JSON valido no formato de array com 10 frases de ingles iniciante tambem faca uma explicação em português no campo de explanaation tambem crie frase sem pontuação:
+      prompt = `Retorne apenas JSON valido no formato de array com 10 frases no ${language} no nivel ${nivel} tambem faca uma explicação em português no campo de explanaation tambem crie frase sem pontuação:
 [
   {
     "wordsShuffled": ["watching", "are", "movie", "we", "a"],
@@ -71,9 +105,16 @@ export async function run(typeGame: string) {
       throw new Error(`Tipo de jogo invalido: ${typeGame}`);
   }
 
-  const result = await model.generateContent(prompt);
-  const response = await result.response;
+  const response = await openai.responses.create({
+    model: getOpenAIModel(),
+    input: prompt,
+  });
 
-  const dadosRecuperados = parseJsonResponse(response.text());
+  const outputText = response.output_text?.trim();
+  if (!outputText) {
+    throw new Error("Resposta vazia da OpenAI.");
+  }
+
+  const dadosRecuperados = parseJsonResponse(outputText);
   return dadosRecuperados;
 }
