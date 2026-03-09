@@ -13,12 +13,6 @@ type ModalQuestionConfigProps = {
   navigation: string;
 };
 
-const niveis: Array<{ value: NivelPergunta; label: string }> = [
-  { value: "iniciante", label: "Iniciante" },
-  { value: "intermediaria", label: "Intermediária" },
-  { value: "avancado", label: "Avancado" },
-];
-
 export default function ModalQuestionConfig({
   open,
   onClose,
@@ -47,6 +41,7 @@ export default function ModalQuestionConfig({
     });
     onClose();
   };
+  const rangeFillPercent = ((questions - 10) / (100 - 10)) * 100;
 
   return (
     <div
@@ -66,9 +61,7 @@ export default function ModalQuestionConfig({
             <h2 id="question-modal-title" className="text-lg font-semibold">
               Configurar Perguntas
             </h2>
-            <p className="text-sm text-muted-foreground">
-              Escolha quantidade e nivel de dificuldade.
-            </p>
+            <p className="text-sm text-muted-foreground">Escolha quantidade</p>
           </div>
           <button
             className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
@@ -95,42 +88,20 @@ export default function ModalQuestionConfig({
             </div>
             <input
               id="question-range"
-              className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-muted accent-primary"
+              className="h-2 w-full cursor-pointer appearance-none text-blue-500 rounded-lg"
               type="range"
               min={10}
               max={100}
               step={1}
               value={questions}
               onChange={(event) => setQuestions(Number(event.target.value))}
+              style={{
+                background: `linear-gradient(to right, #4481be 0%,  #00008b ${rangeFillPercent}%, var(--muted) ${rangeFillPercent}%, var(--muted) 100%)`,
+              }}
             />
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>10</span>
               <span>100</span>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-foreground">
-              Nivel da pergunta
-            </p>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-              {niveis.map((item) => {
-                const active = nivel === item.value;
-                return (
-                  <button
-                    key={item.value}
-                    className={`rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
-                      active
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-background hover:bg-muted"
-                    }`}
-                    onClick={() => setNivel(item.value)}
-                    type="button"
-                  >
-                    {item.label}
-                  </button>
-                );
-              })}
             </div>
           </div>
         </div>
@@ -139,7 +110,11 @@ export default function ModalQuestionConfig({
           <Button variant="outline" onClick={onClose} type="button">
             Cancelar
           </Button>
-          <Button onClick={handleConfirm} type="button">
+          <Button
+            className="cursor-pointer"
+            onClick={handleConfirm}
+            type="button"
+          >
             Confirmar
           </Button>
         </div>

@@ -6,6 +6,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 export const Header = () => {
   const {
+    // userId,
     name,
     language,
     nivel,
@@ -28,6 +29,7 @@ export const Header = () => {
       }
 
       setUserId(user.uid);
+
       const userData = await getUserById(user.uid);
 
       if (userData) {
@@ -41,6 +43,7 @@ export const Header = () => {
 
     return () => unsubscribe();
   }, [setEmail, setLanguage, setName, setNivel, setUserId]);
+
   return (
     <header className="bg-background shadow-lg">
       <nav className="m-auto flex max-w-4xl items-center justify-between px-4">
