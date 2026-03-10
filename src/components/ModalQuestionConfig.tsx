@@ -1,47 +1,33 @@
-import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "@tanstack/react-router";
-
-type NivelPergunta = "iniciante" | "intermediaria" | "avancado";
+import userStore from "@/utils/zustand/userStore";
 
 type ModalQuestionConfigProps = {
   open: boolean;
   onClose: () => void;
-  onConfirm?: (config: { questions: number; nivel: NivelPergunta }) => void;
   navigation: string;
 };
 
 export default function ModalQuestionConfig({
   open,
   onClose,
-  onConfirm,
   navigation,
 }: ModalQuestionConfigProps) {
-  const [questions, setQuestions] = useState(10);
-  const [nivel, setNivel] = useState<NivelPergunta>("iniciante");
-
+  const { setRange, range } = userStore();
   const navigate = useNavigate({ from: "/" });
-
-  useEffect(() => {
-    if (open) {
-      setQuestions(10);
-      setNivel("iniciante");
-    }
-  }, [open]);
 
   if (!open) return null;
 
   const handleConfirm = () => {
-    onConfirm?.({ questions, nivel });
     navigate({
       to: "/$game",
       params: { game: navigation },
     });
     onClose();
   };
-  const rangeFillPercent = ((questions - 10) / (100 - 10)) * 100;
+
+  const rangeFillPercent = ((range - 10) / (50 - 10)) * 100;
 
   return (
     <div
@@ -83,7 +69,7 @@ export default function ModalQuestionConfig({
                 Quantidade de perguntas
               </label>
               <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
-                {questions}
+                {range}
               </span>
             </div>
             <input
@@ -91,17 +77,17 @@ export default function ModalQuestionConfig({
               className="h-2 w-full cursor-pointer appearance-none text-blue-500 rounded-lg"
               type="range"
               min={10}
-              max={100}
+              max={50}
               step={1}
-              value={questions}
-              onChange={(event) => setQuestions(Number(event.target.value))}
+              value={range}
+              onChange={(event) => setRange(Number(event.target.value))}
               style={{
                 background: `linear-gradient(to right, #4481be 0%,  #00008b ${rangeFillPercent}%, var(--muted) ${rangeFillPercent}%, var(--muted) 100%)`,
               }}
             />
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>10</span>
-              <span>100</span>
+              <span>50</span>
             </div>
           </div>
         </div>

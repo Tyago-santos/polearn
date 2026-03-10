@@ -9,13 +9,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const nivelStyleMap: Record<string, string> = {
+type RankingNivel = "iniciante" | "intermediario" | "avancado";
+
+const nivelStyleMap: Record<RankingNivel, string> = {
   iniciante: "bg-emerald-500/10 text-emerald-700 border border-emerald-500/30",
   intermediario: "bg-amber-500/10 text-amber-700 border border-amber-500/30",
   avancado: "bg-sky-500/10 text-sky-700 border border-sky-500/30",
 };
 
-const normalizeNivel = (nivel: string) => {
+const normalizeNivel = (nivel: string): RankingNivel => {
   const value = nivel.toLowerCase();
 
   if (value.includes("inic")) return "iniciante";
@@ -29,13 +31,14 @@ export function TableComponet() {
   const [users, setUsers] = useState<RankingUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedNivel, setSelectedNivel] = useState<RankingNivel>("iniciante");
 
   useEffect(() => {
     const loadUsers = async () => {
       try {
         setLoading(true);
         setError(null);
-        const allUsers = await getUsers();
+        const allUsers = await getUsers(selectedNivel);
         setUsers(allUsers);
       } catch (err) {
         setError("Nao foi possivel carregar o ranking.");
@@ -46,21 +49,37 @@ export function TableComponet() {
     };
 
     loadUsers();
-  }, []);
+  }, [selectedNivel]);
+
+  const headerButtonClass = (nivel: RankingNivel) =>
+    `cursor-pointer rounded-full border px-3 py-2 text-[10px] font-bold transition-colors md:px-5 md:text-base ${
+      selectedNivel === nivel
+        ? nivelStyleMap[nivel]
+        : "border-slate-200 bg-white text-slate-500 hover:bg-slate-100"
+    }`;
 
   return (
     <div className="w-full rounded-2xl border border-border/70 bg-card/90 p-3 shadow-xl backdrop-blur-sm sm:p-5">
       <div className="flex gap-4">
-        <button className="cursor-pointer bg-emerald-500/10 text-emerald-700 border border-emerald-500/30 rounded-full border-2 border-emerald-500 px-3 py-2 text-[10px] font-bold transition-colors hover:bg-emerald-500 hover:text-white md:px-5 md:text-base">
+        <button
+          className={headerButtonClass("iniciante")}
+          onClick={() => setSelectedNivel("iniciante")}
+          type="button"
+        >
           Iniciante
         </button>
-        <button className="cursor-pointer bg-amber-500/10 text-amber-700 border border-amber-500/30 hover:bg-amber-500 hover:text-white rounded-full border-2  px-3 py-2 text-[10px] font-bold transition-colors   md:px-5 md:text-base">
+        <button
+          className={headerButtonClass("intermediario")}
+          onClick={() => setSelectedNivel("intermediario")}
+          type="button"
+        >
           Intermediário
         </button>
 
         <button
-          className="cursor-pointer rounded-full bg-sky-500/10 text-sky-700 border border-sky-500/30
-        hover:bg-sky-500 hover:text-white py-2 px-3 text-[10px] font-bold  transition-colors  text-sky-700  md:px-5 md:text-base"
+          className={headerButtonClass("avancado")}
+          onClick={() => setSelectedNivel("avancado")}
+          type="button"
         >
           Avançado
         </button>
@@ -96,27 +115,35 @@ export function TableComponet() {
             </TableRow>
           )}
 
-          {!loading &&
-            !error &&
-            users.slice(0, 9).map((user) => (
-            <TableRow
-              className="cursor-pointer border-border/60 transition-colors hover:bg-muted/40"
-              key={user.id}
-            >
-              <TableCell className="py-4 font-medium text-[10px] text-foreground/95">
-                {user.name}
-              </TableCell>
-              <TableCell className="py-4">
-                <span
-                  className={`inline-flex rounded-full  px-3 py-1 text-xs font-semibold capitalize ${nivelStyleMap[normalizeNivel(user.nivel)]}`}
-                >
-                  {user.nivel}
-                </span>
-              </TableCell>
-              <TableCell className="py-4 text-right font-semibold text-foreground/95">
-                {user.point}
+          {!loading && !error && users.length === 0 && (
+            <TableRow className="border-border/60">
+              <TableCell className="py-4 text-sm text-slate-500" colSpan={3}>
+                Nenhum usuario encontrado nesse nivel.
               </TableCell>
             </TableRow>
+          )}
+
+          {!loading &&
+            !error &&
+            users.map((user) => (
+              <TableRow
+                className="cursor-pointer border-border/60 transition-colors hover:bg-muted/40"
+                key={user.id}
+              >
+                <TableCell className="py-4 font-medium text-[10px] text-foreground/95">
+                  {user.name}
+                </TableCell>
+                <TableCell className="py-4">
+                  <span
+                    className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold capitalize ${nivelStyleMap[normalizeNivel(user.nivel)]}`}
+                  >
+                    {user.nivel}
+                  </span>
+                </TableCell>
+                <TableCell className="py-4 text-right font-semibold text-foreground/95">
+                  {user.point}
+                </TableCell>
+              </TableRow>
             ))}
         </TableBody>
       </Table>

@@ -15,17 +15,13 @@ export async function userLogin(
   paassword: string,
 ): Promise<User> {
   try {
-    // Await espera a promessa ser resolvida
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
       paassword,
     );
 
-    // Login realizado com sucesso
-    const user = userCredential.user;
-    console.log("Usuário logado:", user.uid);
-    return user;
+    return userCredential.user;
   } catch (error: unknown) {
     if (!(error instanceof FirebaseError)) {
       throw error;
@@ -43,27 +39,22 @@ export const userRegister = async (
   senha: string,
 ): Promise<User> => {
   try {
-    // 2. Chama a função de cadastro com await
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
       senha,
     );
 
-    // 3. Usuário criado com sucesso
-    const user = userCredential.user;
-    console.log("Usuário cadastrado:", user.email);
-    return user;
+    return userCredential.user;
   } catch (error: unknown) {
     if (!(error instanceof FirebaseError)) {
       throw error;
     }
 
-    // 4. Tratamento de erro (email duplicado, senha fraca, etc.)
     const errorCode = error.code;
     const errorMessage = error.message;
     console.error("Erro no cadastro:", errorCode, errorMessage);
-    throw error; // Repassa o erro para ser tratado na interface
+    throw error;
   }
 };
 
@@ -87,9 +78,7 @@ export function getCurrentUser(): Promise<User | null> {
 export const userLogout = async () => {
   try {
     await signOut(auth);
-    console.log("User signed out");
-    // Redirect to login page here
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error signing out:", error);
   }
 };
@@ -97,8 +86,11 @@ export const userLogout = async () => {
 export async function userFogert(email: string) {
   try {
     await sendPasswordResetEmail(auth, email);
-    console.log("E-mail de recuperação enviado!");
-  } catch (error) {
+  } catch (error: unknown) {
+    if (!(error instanceof FirebaseError)) {
+      throw error;
+    }
+
     console.error("Erro ao enviar e-mail:", error.code);
   }
 }

@@ -70,7 +70,6 @@ export default function GameDropResponse() {
     resetPoints,
   } = userStore();
 
-  console.log(dataResponse.length);
   const mountedSentence = useMemo(() => {
     if (!question) {
       return "Carregando frase...";
@@ -181,7 +180,7 @@ export default function GameDropResponse() {
 
   if (loading) {
     return (
-      <section className="max-w-4xl mx-auto mt-6 rounded-3xl border border-blue-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
+      <section className="mx-auto mt-6 max-w-4xl rounded-3xl border border-blue-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
         <p className="text-sm font-bold text-blue-600">Carregando frases...</p>
       </section>
     );
@@ -189,7 +188,7 @@ export default function GameDropResponse() {
 
   if (error) {
     return (
-      <section className="max-w-4xl mx-auto mt-6 rounded-3xl border border-red-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
+      <section className="mx-auto mt-6 max-w-4xl rounded-3xl border border-red-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
         <p className="text-sm font-bold text-red-600">{error}</p>
       </section>
     );
@@ -197,24 +196,26 @@ export default function GameDropResponse() {
 
   if (!question) {
     return (
-      <section className="max-w-4xl mx-auto mt-6 rounded-3xl flex items-center justify-center border border-blue-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
-        <div className="flex gap-5">
-          <article>
-            <h4 className="text-green-500 text-center font-extrabold my-2">
-              Acertos
-            </h4>
-            <span className="border-3 border-green-500 text-green-500 flex justify-center items-center rounded-full size-20">
-              {pointCorrect}
-            </span>
-          </article>
-          <article>
-            <h4 className="text-red-500 font-extrabold text-center my-2">
-              Erradas
-            </h4>
-            <span className="border-3 border-red-500 text-red-500 flex justify-center items-center rounded-full size-20">
-              {pointError}
-            </span>
-          </article>
+      <section className="mx-auto mt-6 max-w-4xl rounded-3xl border border-blue-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
+        <div className="flex items-center justify-center">
+          <div className="gap-5">
+            <article>
+              <h4 className="my-2 text-center font-extrabold text-green-500">
+                Acertos
+              </h4>
+              <span className="flex size-20 items-center justify-center rounded-full border-3 border-green-500 text-green-500">
+                {pointCorrect}
+              </span>
+            </article>
+            <article>
+              <h4 className="my-2 text-center font-extrabold text-red-500">
+                Erradas
+              </h4>
+              <span className="flex size-20 items-center justify-center rounded-full border-3 border-red-500 text-red-500">
+                {pointError}
+              </span>
+            </article>
+          </div>
         </div>
 
         <div className="text-right">
@@ -231,7 +232,7 @@ export default function GameDropResponse() {
 
   return (
     <>
-      <section className="max-w-4xl mx-auto mt-6 rounded-3xl border border-blue-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
+      <section className="mx-auto mt-6 max-w-4xl rounded-3xl border border-blue-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
         <div className="mb-5 flex items-center justify-between text-sm font-bold text-blue-600">
           <span>Complete a frase</span>
           <span>

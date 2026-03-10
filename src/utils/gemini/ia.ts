@@ -1,19 +1,20 @@
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { userStore } from "../zustand/userStore";
 
-// Substitua pela sua chave real
+function getGeminiClient() {
+  const apiKey =
+    import.meta.env.VITE_GEMINI_API_KEY ||
+    import.meta.env.VITE_GEMINI_API_KEY_2;
 
-function getOpenAIClient() {
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error("Defina VITE_GEMINI_API_KEY no arquivo .env.");
+  }
 
-  return new OpenAI({
-    apiKey,
-    dangerouslyAllowBrowser: true,
-  });
+  return new GoogleGenerativeAI(apiKey);
 }
 
-function getOpenAIModel() {
-  return import.meta.env.VITE_OPENAI_MODEL || "gpt-4o";
+function getGeminiModel() {
+  return import.meta.env.VITE_GEMINI_MODEL;
 }
 
 function sanitizeJsonText(text: string) {
@@ -52,14 +53,20 @@ function parseJsonResponse(text: string) {
 }
 
 export async function run(typeGame: string) {
-  const { nivel, language } = userStore.getState();
-  const openai = getOpenAIClient();
+  const { nivel, language, range } = userStore.getState();
+  const gemini = getGeminiClient();
+  const model = gemini.getGenerativeModel({
+    model: getGeminiModel(),
+    generationConfig: {
+      responseMimeType: "application/json",
+    },
+  });
 
   let prompt = "";
 
   switch (typeGame) {
     case "question":
-      prompt = `Retorne apenas JSON valido no formato de array com 10 frases de ${language} no nivel ${nivel} e  tambem com explicação da perguntas:
+      prompt = `Retorne apenas JSON valido no formato de array com ${range} frases de ${language} no nivel ${nivel} e  tambem com explicação da perguntas:
 [
   {
     "id": 1,
@@ -77,7 +84,7 @@ export async function run(typeGame: string) {
       break;
 
     case "drag":
-      prompt = `Retorne apenas JSON valido no formato de array com 10 frases no idioma ${language} no nivle ${nivel} e  tambem com explicação da perguntas:
+      prompt = `Retorne apenas JSON valido no formato de array com ${range} frases no idioma ${language} no nivle ${nivel} e  tambem com explicação da perguntas:
 [
   {
     "id": 1,
@@ -90,7 +97,7 @@ export async function run(typeGame: string) {
       break;
 
     case "drop":
-      prompt = `Retorne apenas JSON valido no formato de array com 10 frases no ${language} no nivel ${nivel} tambem faca uma explicação em português no campo de explanaation tambem crie frase sem pontuação:
+      prompt = `Retorne apenas JSON valido no formato de array com ${range} frases no ${language} no nivel ${nivel} tambem faca uma explicação em português no campo de explanaation tambem crie frase sem pontuação:
 [
   {
     "wordsShuffled": ["watching", "are", "movie", "we", "a"],
@@ -105,14 +112,11 @@ export async function run(typeGame: string) {
       throw new Error(`Tipo de jogo invalido: ${typeGame}`);
   }
 
-  const response = await openai.responses.create({
-    model: getOpenAIModel(),
-    input: prompt,
-  });
+  const response = await model.generateContent(prompt);
+  const outputText = response.response.text()?.trim();
 
-  const outputText = response.output_text?.trim();
   if (!outputText) {
-    throw new Error("Resposta vazia da OpenAI.");
+    throw new Error("Resposta vazia da API Gemini.");
   }
 
   const dadosRecuperados = parseJsonResponse(outputText);

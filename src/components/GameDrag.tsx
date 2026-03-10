@@ -40,7 +40,7 @@ export default function GameDrag() {
     pointCorrect,
     pointError,
     resetPoints,
-    userId
+    userId,
   } = userStore();
 
   const navigate = useNavigate();
@@ -169,20 +169,22 @@ export default function GameDrag() {
 
   if (!currentSentence) {
     return (
-      <section className="max-w-4xl mx-auto mt-6 rounded-3xl border border-blue-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
-        <div className="flex gap-5">
-          <article>
-            <h4 className="text-green-500 font-extrabold">Acertos</h4>
-            <span className="border-3 border-green-500 text-green-500 flex justify-center items-center rounded-full size-20">
-              {pointCorrect}
-            </span>
-          </article>
-          <article>
-            <h4 className="text-red-500 font-extrabold">erradas</h4>
-            <span className="border-3 border-red-500 text-red-500 flex justify-center items-center rounded-full size-20">
-              {pointError}
-            </span>
-          </article>
+      <section className="max-w-4xl mx-auto mt-6 rounded-3xl border border-blue-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70  md:p-8">
+        <div className="flex items-center justify-center">
+          <div className="flex gap-5">
+            <article>
+              <h4 className="text-green-500 font-extrabold">Acertos</h4>
+              <span className="border-3 border-green-500 text-green-500 flex justify-center items-center rounded-full size-20">
+                {pointCorrect}
+              </span>
+            </article>
+            <article>
+              <h4 className="text-red-500 font-extrabold">erradas</h4>
+              <span className="border-3 border-red-500 text-red-500 flex justify-center items-center rounded-full size-20">
+                {pointError}
+              </span>
+            </article>
+          </div>
         </div>
 
         <div className="text-right">

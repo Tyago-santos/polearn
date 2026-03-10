@@ -52,7 +52,6 @@ function RouteComponent() {
   const navigate = useNavigate();
 
   const handleSubmitClick = async (data: FormData) => {
-    console.log(data.Language, data.nivel);
     if (data.Language && data.nivel) {
       await saveUser(userId, name, email, data.nivel, data.Language);
       navigate({
