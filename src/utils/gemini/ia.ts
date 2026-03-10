@@ -68,8 +68,7 @@ Formato da resposta: um array JSON.
 Cada objeto deve conter:
 
 - id: número sequencial começando em 0
-- question: pergunta ou frase incompleta em inglês
-- tema: assunto gramatical da pergunta (ex: Simple Present, Verb To Be, Prepositions, Present Continuous)
+- question: frase  em ${language}
 - response: array com exatamente 4 alternativas
 - explanation: explicação curta em português explicando a resposta correta
 
@@ -92,8 +91,7 @@ Exemplo do formato esperado:
 [
   {
     "id": 1,
-    "question": "She ___ to school every day.",
-    "tema": "Simple Present",
+    "question": "",
     "response": [
       { "options": "go", "isCorrect": false },
       { "options": "goes", "isCorrect": true },
