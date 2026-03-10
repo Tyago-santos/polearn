@@ -225,7 +225,7 @@ export default function GameDrag() {
             >
               {(provided) => (
                 <article
-                  className="flex flex-wrap gap-3 overflow-x-hidden pb-2"
+                  className="flex flex-wrap gap-3 overflow-y-hidden pb-2"
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                 >

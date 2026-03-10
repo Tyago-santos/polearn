@@ -57,36 +57,50 @@ export async function run(typeGame: string) {
       prompt = `
 Retorne apenas JSON válido. Não escreva nenhum texto antes ou depois do JSON.
 
-Gere exatamente ${range} frases.
+Gere exatamente ${range} perguntas para estudo.
 
 Configurações:
-- Idioma das frases: ${language}
+- Idioma: ${language}
 - Nível do estudante: ${nivel}
 
-A resposta deve ser um array JSON.
+Formato da resposta: um array JSON.
 
-Estrutura obrigatória de cada objeto:
+Cada objeto deve conter:
+
 - id: número sequencial começando em 0
-- question: frase em inglês com uma lacuna "___"
-- options: array com exatamente 4 alternativas que completam a frase
-- correct: array contendo somente a alternativa correta
-- explanation: explicação curta em português explicando por que a resposta está correta
+- question: pergunta ou frase incompleta em inglês
+- tema: assunto gramatical da pergunta (ex: Simple Present, Verb To Be, Prepositions, Present Continuous)
+- response: array com exatamente 4 alternativas
+- explanation: explicação curta em português explicando a resposta correta
 
-Regras:
-- Use frases simples apropriadas para o nível ${nivel}
-- Não repita frases
-- Apenas uma alternativa deve estar correta
-- As alternativas devem fazer sentido gramaticalmente
+Estrutura das alternativas dentro de "response":
 
-Formato de exemplo:
+- options: texto da alternativa
+- isCorrect: true ou false
+
+Regras importantes:
+
+- Deve existir apenas 1 alternativa correta (isCorrect: true)
+- As outras 3 devem ser incorretas
+- As perguntas devem ser apropriadas para o nível ${nivel}
+- Não repetir perguntas
+- As alternativas devem ser plausíveis gramaticalmente
+- O JSON deve ser válido
+
+Exemplo do formato esperado:
 
 [
   {
     "id": 1,
-    "question": "They ___ soccer on Sunday.",
-    "options": ["play", "plays", "played", "playing"],
-    "correct": ["play"],
-    "explanation": "Usamos 'play' porque o sujeito 'They' exige o verbo no plural no presente simples."
+    "question": "She ___ to school every day.",
+    "tema": "Simple Present",
+    "response": [
+      { "options": "go", "isCorrect": false },
+      { "options": "goes", "isCorrect": true },
+      { "options": "going", "isCorrect": false },
+      { "options": "went", "isCorrect": false }
+    ],
+    "explanation": "Usamos 'goes' porque no presente simples o verbo recebe 's' quando o sujeito é he, she ou it."
   }
 ]
 `;
@@ -102,7 +116,7 @@ O idioma das frases deve ser totalmente em ${language}.
 Formato de resposta: um array JSON.
 
 Cada objeto deve conter:
-- id
+- id que comece no 0
 - question (frase incompleta)
 - options (4 alternativas que completam a frase)
 - correct (array contendo apenas a alternativa correta)
