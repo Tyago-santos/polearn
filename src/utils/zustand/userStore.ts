@@ -32,7 +32,7 @@ export const userStore = create<UserStore>((set) => ({
 
   pointCorrect: 0,
   pointError: 0,
-  range: 0,
+  range: 10,
 
   setEmail: (email) => set(() => ({ email })),
   setName: (name) => set(() => ({ name })),
