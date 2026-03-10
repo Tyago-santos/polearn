@@ -1,10 +1,10 @@
-import GameDrag from "@/components/GameDrag";
-import GameDropResponse from "@/components/gameDropResponse";
-import GameQuestion from "@/components/GameQuestion";
 import { createFileRoute, useParams } from "@tanstack/react-router";
+import { lazy, Suspense, useState } from "react";
 
-import ModalAlert from "@/components/ModalAlert";
-import { useState } from "react";
+const GameQuestion = lazy(() => import("@/components/GameQuestion"));
+const GameDrag = lazy(() => import("@/components/GameDrag"));
+const GameDropResponse = lazy(() => import("@/components/gameDropResponse"));
+const ModalAlert = lazy(() => import("@/components/ModalAlert"));
 
 export const Route = createFileRoute("/$game")({
   component: Game,
@@ -13,6 +13,12 @@ export const Route = createFileRoute("/$game")({
 function Game() {
   const params = useParams({ from: "/$game" });
   const [openModal, setOpenModal] = useState(false);
+
+  const fallback = (
+    <section className="mx-auto mt-6 max-w-4xl rounded-3xl border border-blue-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70 md:p-8">
+      <p className="text-sm font-bold text-blue-600">Carregando jogo...</p>
+    </section>
+  );
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-sky-50 via-white to-emerald-50 px-4 py-6 md:py-10">
@@ -31,10 +37,12 @@ function Game() {
         </nav>
       </header>
 
-      {params.game === "question" && <GameQuestion />}
-      {params.game === "drag" && <GameDrag />}
-      {params.game === "drop" && <GameDropResponse />}
-      {openModal && <ModalAlert onClose={() => setOpenModal(false)} />}
+      <Suspense fallback={fallback}>
+        {params.game === "question" && <GameQuestion />}
+        {params.game === "drag" && <GameDrag />}
+        {params.game === "drop" && <GameDropResponse />}
+        {openModal && <ModalAlert onClose={() => setOpenModal(false)} />}
+      </Suspense>
     </main>
   );
 }

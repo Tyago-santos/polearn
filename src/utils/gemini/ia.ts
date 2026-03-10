@@ -1,15 +1,11 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { userStore } from "../zustand/userStore";
 
-function getGeminiClient() {
-  const apiKey =
-    import.meta.env.VITE_GEMINI_API_KEY ||
-    import.meta.env.VITE_GEMINI_API_KEY_2;
-
+async function getGeminiClient(apiKey: string) {
   if (!apiKey) {
     throw new Error("Defina VITE_GEMINI_API_KEY no arquivo .env.");
   }
 
+  const { GoogleGenerativeAI } = await import("@google/generative-ai");
   return new GoogleGenerativeAI(apiKey);
 }
 
@@ -54,14 +50,6 @@ function parseJsonResponse(text: string) {
 
 export async function run(typeGame: string) {
   const { nivel, language, range } = userStore.getState();
-  const gemini = getGeminiClient();
-  const model = gemini.getGenerativeModel({
-    model: getGeminiModel(),
-    generationConfig: {
-      responseMimeType: "application/json",
-    },
-  });
-
   let prompt = "";
 
   switch (typeGame) {
@@ -112,11 +100,45 @@ export async function run(typeGame: string) {
       throw new Error(`Tipo de jogo invalido: ${typeGame}`);
   }
 
-  const response = await model.generateContent(prompt);
-  const outputText = response.response.text()?.trim();
+  const primaryApiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  const fallbackApiKey = import.meta.env.VITE_GEMINI_API_KEY_2;
+  const apiKeys = [primaryApiKey, fallbackApiKey].filter(
+    (value, index, keys): value is string => Boolean(value) && keys.indexOf(value) === index,
+  );
+
+  if (apiKeys.length === 0) {
+    throw new Error("Defina VITE_GEMINI_API_KEY no arquivo .env.");
+  }
+
+  let outputText = "";
+  let lastError: unknown;
+
+  for (const apiKey of apiKeys) {
+    try {
+      const gemini = await getGeminiClient(apiKey);
+      const model = gemini.getGenerativeModel({
+        model: getGeminiModel(),
+        generationConfig: {
+          responseMimeType: "application/json",
+        },
+      });
+      const response = await model.generateContent(prompt);
+      outputText = response.response.text()?.trim() ?? "";
+
+      if (!outputText) {
+        throw new Error("Resposta vazia da API Gemini.");
+      }
+
+      break;
+    } catch (error) {
+      lastError = error;
+    }
+  }
 
   if (!outputText) {
-    throw new Error("Resposta vazia da API Gemini.");
+    throw lastError instanceof Error
+      ? lastError
+      : new Error("Falha ao consultar a API Gemini.");
   }
 
   const dadosRecuperados = parseJsonResponse(outputText);
